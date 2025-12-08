@@ -78,6 +78,44 @@ model Task {
   Comments Comment[]
 }  
 
+model ActivityLog{
+  id String @id @default(uuid())
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  action ActivityAction
+  entityType EntityType 
+  entityId String
+  workspaceId String?
+  workspace Workspace? @relation(fields: [workspaceId], references: [id])
+  description String
+  metadata Json?
+  createdAt DateTime @default(now())
+
+  @@index([workspaceId, createdAt])
+  @@index([userId, createdAt])
+  @@index([entityType, entityId])
+}
+
+enum ActivityAction{
+ CREATED
+  UPDATED
+  DELETED
+  ASSIGNED
+  UNASSIGNED
+  COMMENTED
+  COMPLETED
+  REOPENED
+  ARCHIVED
+}
+
+enum EntityType {
+  WORKSPACE
+  PROJECT
+  TASK
+  COMMENT
+  MEMBER
+}
+
 enum TaskStatus {
   TODO
   IN_PROGRESS
