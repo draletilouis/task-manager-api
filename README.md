@@ -20,7 +20,7 @@ Built with **Node.js**, **Express**, and **Prisma ORM** — designed for scalabi
 
 ---
 
-## 📌 Project Status
+## Project Status
 
 ### ✅ Completed Features
 
@@ -74,7 +74,7 @@ Built with **Node.js**, **Express**, and **Prisma ORM** — designed for scalabi
 
 ---
 
-### 🚧 Pending Features
+### Pending Features
 
 **🚀 Advanced Features**
 * File attachments
@@ -134,7 +134,7 @@ task-manager-api/
 
 ---
 
-## 🗄️ Database Schema
+## Database Schema
 
 ### **User**
 
@@ -255,15 +255,15 @@ DELETE /workspaces/comments/:commentId         # Delete comment
 
 ---
 
-## 🔒 Security Features
+## Security Features
 
-### 🔑 Authentication
+### Authentication
 
 * JWT Access + Refresh tokens
 * Strict token expiration
 * Protected routes middleware
 
-### 🛡️ Password Security
+### Password Security
 
 * Bcrypt hashing (10 salt rounds)
 * Strong password validation
@@ -273,14 +273,14 @@ DELETE /workspaces/comments/:commentId         # Delete comment
   - At least one lowercase letter
   - At least one number
 
-### ✔️ Input Validation
+### Input Validation
 
 * Email validation
 * Password strength check
 * Sanitized request bodies
 * Required field validation
 
-### 🔐 Authorization
+### Authorization
 
 * Role-based access control (OWNER, ADMIN, MEMBER)
 * Workspace membership validation
@@ -289,7 +289,7 @@ DELETE /workspaces/comments/:commentId         # Delete comment
 
 ---
 
-## 🧪 Testing
+## Testing
 
 The project includes comprehensive test coverage using Jest and Supertest.
 
@@ -315,7 +315,7 @@ npm test -- task.service    # Run specific test file
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
