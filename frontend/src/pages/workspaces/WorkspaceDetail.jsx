@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Button from '../../components/common/Button';
 import Modal from '../../components/common/Modal';
 import Spinner from '../../components/common/Spinner';
-import { getWorkspace, getWorkspaceMembers, addWorkspaceMember, removeWorkspaceMember } from '../../api/workspaces';
+import { getWorkspace, getWorkspaceMembers, addWorkspaceMember, removeWorkspaceMember, updateWorkspaceMemberRole } from '../../api/workspaces';
 import { useToast } from '../../context/ToastContext';
 
 const WorkspaceDetail = () => {
@@ -18,10 +18,13 @@ const WorkspaceDetail = () => {
     loading,
     error,
     addProject,
+    editProject,
     removeProject
   } = useProjects(workspaceId);
 
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditProjectModal, setShowEditProjectModal] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     description: ''
@@ -88,6 +91,29 @@ const WorkspaceDetail = () => {
     }
   };
 
+  // Handle edit project
+  const handleEditProjectClick = (project) => {
+    setSelectedProject(project);
+    setFormData({
+      name: project.name,
+      description: project.description || ''
+    });
+    setShowEditProjectModal(true);
+  };
+
+  const handleUpdateProject = async (e) => {
+    e.preventDefault();
+    try {
+      await editProject(selectedProject.id, formData);
+      setShowEditProjectModal(false);
+      setFormData({ name: '', description: '' });
+      setSelectedProject(null);
+      toast.success('Project updated successfully');
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
   // Handle delete project
   const handleDeleteProject = async (projectId) => {
     if (window.confirm('Delete this project?')) {
@@ -113,6 +139,22 @@ const WorkspaceDetail = () => {
       toast.success('Member invited successfully');
     } catch (err) {
       toast.error(err.message);
+    }
+  };
+
+  // Handle change member role
+  const handleChangeRole = async (memberId, currentRole) => {
+    const newRole = currentRole === 'ADMIN' ? 'MEMBER' : 'ADMIN';
+    if (window.confirm(`Change this member's role to ${newRole}?`)) {
+      try {
+        await updateWorkspaceMemberRole(workspaceId, memberId, newRole);
+        // Refresh members list
+        const data = await getWorkspaceMembers(workspaceId);
+        setMembers(data);
+        toast.success('Member role updated successfully');
+      } catch (err) {
+        toast.error(err.message);
+      }
     }
   };
 
@@ -191,13 +233,19 @@ const WorkspaceDetail = () => {
                 </p>
                 
                 <div className="flex gap-2">
-                  <Link 
+                  <Link
                     to={`/workspaces/${workspaceId}/projects/${project.id}`}
                     className="flex-1"
                   >
                     <Button className="w-full">View</Button>
                   </Link>
-                  <Button 
+                  <Button
+                    variant="secondary"
+                    onClick={() => handleEditProjectClick(project)}
+                  >
+                    Edit
+                  </Button>
+                  <Button
                     variant="danger"
                     onClick={() => handleDeleteProject(project.id)}
                   >
@@ -235,16 +283,32 @@ const WorkspaceDetail = () => {
                   </div>
                   <div>
                     <p className="font-medium">{member.user?.email || 'Unknown User'}</p>
-                    <p className="text-sm text-gray-500">{member.role}</p>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-xs px-2 py-1 rounded ${
+                        member.role === 'OWNER' ? 'bg-purple-100 text-purple-700' :
+                        member.role === 'ADMIN' ? 'bg-blue-100 text-blue-700' :
+                        'bg-gray-100 text-gray-700'
+                      }`}>
+                        {member.role}
+                      </span>
+                    </div>
                   </div>
                 </div>
                 {member.role !== 'OWNER' && (
-                  <Button
-                    variant="danger"
-                    onClick={() => handleRemoveMember(member.userId)}
-                  >
-                    Remove
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="secondary"
+                      onClick={() => handleChangeRole(member.userId, member.role)}
+                    >
+                      {member.role === 'ADMIN' ? 'Make Member' : 'Make Admin'}
+                    </Button>
+                    <Button
+                      variant="danger"
+                      onClick={() => handleRemoveMember(member.userId)}
+                    >
+                      Remove
+                    </Button>
+                  </div>
                 )}
               </div>
             ))}
@@ -290,6 +354,52 @@ const WorkspaceDetail = () => {
                 type="button"
                 variant="secondary"
                 onClick={() => setShowCreateModal(false)}
+              >
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {/* Edit Project Modal */}
+      {showEditProjectModal && (
+        <Modal
+          onClose={() => setShowEditProjectModal(false)}
+          title="Edit Project"
+        >
+          <form onSubmit={handleUpdateProject}>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Project Name *
+              </label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Description
+              </label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows="3"
+              />
+            </div>
+
+            <div className="flex gap-3">
+              <Button type="submit" className="flex-1">Update</Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setShowEditProjectModal(false)}
               >
                 Cancel
               </Button>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getTask, updateTask, deleteTask } from '../../api/tasks';
 import { useComments } from '../../hooks/useComments';
+import { getWorkspaceMembers } from '../../api/workspaces';
 import Modal from '../../components/common/Modal';
 import TaskForm from '../../components/task/TaskForm';
 import CommentList from '../../components/comment/CommentList';
@@ -18,8 +19,24 @@ const TaskDetail = () => {
   const [error, setError] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isEditingAssignee, setIsEditingAssignee] = useState(false);
+  const [members, setMembers] = useState([]);
 
   const { comments, loading: commentsLoading, addComment, editComment, removeComment } = useComments(taskId);
+
+  // Fetch workspace members for assignee dropdown
+  useEffect(() => {
+    const fetchMembers = async () => {
+      if (!workspaceId) return;
+      try {
+        const data = await getWorkspaceMembers(workspaceId);
+        setMembers(data);
+      } catch (error) {
+        console.error('Failed to fetch members:', error);
+      }
+    };
+    fetchMembers();
+  }, [workspaceId]);
 
   const fetchTask = async () => {
     try {
@@ -86,6 +103,21 @@ const TaskDetail = () => {
     } catch (error) {
       console.error('Failed to update priority:', error);
       toast.error('Failed to update priority: ' + error.message);
+    }
+  };
+
+  const handleAssigneeChange = async (newAssigneeId) => {
+    try {
+      const updated = await updateTask(workspaceId, projectId, taskId, {
+        ...task,
+        assigneeId: newAssigneeId || null
+      });
+      setTask(updated);
+      setIsEditingAssignee(false);
+      toast.success('Assignee updated successfully');
+    } catch (error) {
+      console.error('Failed to update assignee:', error);
+      toast.error('Failed to update assignee: ' + error.message);
     }
   };
 
@@ -191,19 +223,43 @@ const TaskDetail = () => {
 
         {/* Assignee */}
         <div className="mb-4">
-          <h2 className="text-lg font-semibold text-gray-700 mb-2">Assigned To</h2>
-          <p className="text-gray-600">
-            {task.assignee ? (
-              <span className="flex items-center gap-2">
-                <span className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-medium">
-                  {task.assignee.email?.charAt(0).toUpperCase() || '?'}
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-lg font-semibold text-gray-700">Assigned To</h2>
+            <Button
+              variant="secondary"
+              onClick={() => setIsEditingAssignee(!isEditingAssignee)}
+              className="text-sm"
+            >
+              {isEditingAssignee ? 'Cancel' : 'Change'}
+            </Button>
+          </div>
+          {isEditingAssignee ? (
+            <select
+              value={task.assigneeId || ''}
+              onChange={(e) => handleAssigneeChange(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Unassigned</option>
+              {members.map(member => (
+                <option key={member.userId} value={member.userId}>
+                  {member.user?.email || 'Unknown User'}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <p className="text-gray-600">
+              {task.assignee ? (
+                <span className="flex items-center gap-2">
+                  <span className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-medium">
+                    {task.assignee.email?.charAt(0).toUpperCase() || '?'}
+                  </span>
+                  {task.assignee.email || 'Unknown User'}
                 </span>
-                {task.assignee.email || 'Unknown User'}
-              </span>
-            ) : (
-              'Unassigned'
-            )}
-          </p>
+              ) : (
+                'Unassigned'
+              )}
+            </p>
+          )}
         </div>
 
         {/* Status Update */}
