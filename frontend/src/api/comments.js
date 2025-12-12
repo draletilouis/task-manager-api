@@ -1,4 +1,4 @@
-import apiClient from './apiClient';
+import apiClient from './client';
 
 // Fetch all comments for task
 export const getComments = async (taskId) => {

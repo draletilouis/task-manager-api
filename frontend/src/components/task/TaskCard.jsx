@@ -92,7 +92,7 @@ const TaskCard = ({ task, workspaceId, projectId }) => {
         {/* Due date */}
         {task.dueDate && (
           <div className="flex items-center gap-1 text-xs text-gray-500">
-            <span>=�</span>
+            <span>📅</span>
             <span className={isOverdue(task.dueDate) ? 'text-red-600 font-medium' : ''}>
               {formatDate(task.dueDate)}
             </span>

@@ -12,6 +12,18 @@ export const getTasks = async (workspaceId, projectId) => {
   }
 };
 
+// Fetch single task by ID
+export const getTask = async (workspaceId, projectId, taskId) => {
+  try {
+    const response = await apiClient.get(
+      `/workspaces/${workspaceId}/projects/${projectId}/tasks/${taskId}`
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Failed to fetch task");
+  }
+};
+
 // Create new task
 export const createTask = async (workspaceId, projectId, taskData) => {
   try {
