@@ -1,11 +1,10 @@
 import { useEffect } from 'react';
-import { X } from 'lucide-react';
 
 const Modal = ({
   children,
   onClose,
   title,
-  size = 'md', // 'sm' | 'md' | 'lg' | 'xl'
+  size = 'md',
   showCloseButton = true
 }) => {
   // Prevent body scroll when modal is open
@@ -28,45 +27,85 @@ const Modal = ({
     return () => document.removeEventListener('keydown', handleEscape);
   }, [onClose]);
 
-  // Define size styles
-  const sizes = {
-    sm: 'max-w-md',
-    md: 'max-w-lg',
-    lg: 'max-w-2xl',
-    xl: 'max-w-4xl'
+  // Define size widths
+  const getMaxWidth = () => {
+    switch (size) {
+      case 'sm': return '400px';
+      case 'md': return '600px';
+      case 'lg': return '800px';
+      case 'xl': return '1000px';
+      default: return '600px';
+    }
   };
 
   return (
-    // Backdrop - full screen overlay with animation
+    // Backdrop
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'rgba(0, 0, 0, 0.5)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+        padding: '20px'
+      }}
       onClick={onClose}
     >
-      {/* Modal content box with animation */}
+      {/* Modal content box */}
       <div
-        className={`bg-white rounded-xl shadow-2xl ${sizes[size]} w-full mx-auto relative animate-in zoom-in-95 slide-in-from-bottom-4 duration-200`}
+        style={{
+          background: '#fff',
+          borderRadius: '8px',
+          maxWidth: getMaxWidth(),
+          width: '100%',
+          maxHeight: '90vh',
+          display: 'flex',
+          flexDirection: 'column'
+        }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '20px',
+            borderBottom: '1px solid #ddd'
+          }}>
             {title && (
-              <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
+              <h2 style={{ fontSize: '20px', fontWeight: '600', margin: 0 }}>{title}</h2>
             )}
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                style={{
+                  padding: '5px',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '20px',
+                  lineHeight: 1
+                }}
                 aria-label="Close modal"
               >
-                <X className="w-5 h-5" />
+                X
               </button>
             )}
           </div>
         )}
 
         {/* Modal content */}
-        <div className="px-6 py-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+        <div style={{
+          padding: '20px',
+          overflowY: 'auto',
+          flex: 1
+        }}>
           {children}
         </div>
       </div>

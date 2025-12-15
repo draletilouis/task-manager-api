@@ -5,7 +5,7 @@ import prisma from "../../database/prisma.js";
  * User becomes the owner automatically
  */
 export async function createWorkspace(userId, data) {
-    const {name} = data;
+    const {name, description} = data;
 
     // Validate workspace name
     if (!name||name.trim().length === 0) {
@@ -16,6 +16,7 @@ export async function createWorkspace(userId, data) {
     const workspace = await prisma.workspace.create({
         data: {
             name: name.trim(),
+            description: description ? description.trim() : null,
             ownerId: userId,
             members: {
                 create: { userId: userId,
@@ -29,6 +30,7 @@ export async function createWorkspace(userId, data) {
         workspace:{
             id: workspace.id,
             name: workspace.name,
+            description: workspace.description,
             ownerId: workspace.ownerId,
             createdAt: workspace.createdAt,
         }
@@ -43,14 +45,22 @@ export async function getWorkspaces(userId) {
     const memberships = await prisma.workspaceMember.findMany({
         where: { userId: userId },
         include: {
-            workspace: true,
+            workspace: {
+                include: {
+                    _count: {
+                        select: { members: true }
+                    }
+                }
+            },
         },
     });
 
     const workspaces = memberships.map((membership) => ({
         id: membership.workspace.id,
         name: membership.workspace.name,
+        description: membership.workspace.description,
         role: membership.role,
+        memberCount: membership.workspace._count.members,
         createdAt: membership.workspace.createdAt,
     }));
 
@@ -58,11 +68,11 @@ export async function getWorkspaces(userId) {
 }
 
 /**
- * Update workspace name
+ * Update workspace name and description
  * Only admins and owners can update
  */
 export async function updateWorkspace(workspaceId, userId, data) {
-    const { name } = data;
+    const { name, description } = data;
 
     // Validate workspace name
     if (!name || name.trim().length === 0) {
@@ -85,7 +95,10 @@ export async function updateWorkspace(workspaceId, userId, data) {
     // Update workspace
     const workspace = await prisma.workspace.update({
         where: { id: workspaceId },
-        data: { name: name.trim() },
+        data: {
+            name: name.trim(),
+            description: description ? description.trim() : null
+        },
     });
 
     return {
@@ -93,6 +106,7 @@ export async function updateWorkspace(workspaceId, userId, data) {
         workspace: {
             id: workspace.id,
             name: workspace.name,
+            description: workspace.description,
             ownerId: workspace.ownerId,
             createdAt: workspace.createdAt,
         }
@@ -262,4 +276,85 @@ export async function updateMemberRole(workspaceId, updaterId, memberId, newRole
             role: updatedMembership.role
         }
     };
+}
+
+/**
+ * Get workspace details
+ */
+export async function getWorkspace(workspaceId, userId) {
+    // Check if user is a member
+    const membership = await prisma.workspaceMember.findFirst({
+        where: {
+            workspaceId: workspaceId,
+            userId: userId
+        }
+    });
+
+    if (!membership) {
+        throw new Error("You do not have access to this workspace");
+    }
+
+    // Get workspace with member count
+    const workspace = await prisma.workspace.findUnique({
+        where: { id: workspaceId },
+        include: {
+            _count: {
+                select: { members: true }
+            }
+        }
+    });
+
+    if (!workspace) {
+        throw new Error("Workspace not found");
+    }
+
+    return {
+        id: workspace.id,
+        name: workspace.name,
+        description: workspace.description,
+        ownerId: workspace.ownerId,
+        memberCount: workspace._count.members,
+        createdAt: workspace.createdAt,
+        role: membership.role
+    };
+}
+
+/**
+ * Get workspace members
+ */
+export async function getWorkspaceMembers(workspaceId, userId) {
+    // Check if user is a member
+    const membership = await prisma.workspaceMember.findFirst({
+        where: {
+            workspaceId: workspaceId,
+            userId: userId
+        }
+    });
+
+    if (!membership) {
+        throw new Error("You do not have access to this workspace");
+    }
+
+    // Get all members
+    const members = await prisma.workspaceMember.findMany({
+        where: { workspaceId: workspaceId },
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    email: true,
+                    name: true
+                }
+            }
+        }
+    });
+
+    return members.map(member => ({
+        id: member.id,
+        userId: member.userId,
+        email: member.user.email,
+        name: member.user.name,
+        role: member.role,
+        joinedAt: member.createdAt
+    }));
 }

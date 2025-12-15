@@ -5,28 +5,38 @@ import DraggableTaskCard from './DraggableTaskCard';
 import { updateTask } from '../../api/tasks';
 import { useToast } from '../../context/ToastContext';
 
-const DroppableColumn = ({ id, title, bgColor, tasks, workspaceId, projectId }) => {
+const DroppableColumn = ({ id, title, tasks, workspaceId, projectId }) => {
   const { setNodeRef, isOver } = useDroppable({ id });
 
   return (
     <div
       ref={setNodeRef}
-      className={`${bgColor} rounded-lg p-4 min-h-[400px] transition-all ${
-        isOver ? 'ring-2 ring-blue-500 ring-opacity-50' : ''
-      }`}
+      style={{
+        background: '#f5f5f5',
+        border: isOver ? '2px solid #0066cc' : '1px solid #ddd',
+        borderRadius: '4px',
+        padding: '15px',
+        minHeight: '400px'
+      }}
     >
       {/* Column header */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="font-semibold text-gray-700">{title}</h2>
-        <span className="bg-white px-2 py-1 rounded-full text-xs font-medium text-gray-600">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+        <h2 style={{ fontSize: '16px', fontWeight: '600', margin: 0 }}>{title}</h2>
+        <span style={{
+          background: '#fff',
+          padding: '2px 8px',
+          borderRadius: '12px',
+          fontSize: '12px',
+          fontWeight: '500'
+        }}>
           {tasks.length}
         </span>
       </div>
 
       {/* Task cards */}
-      <div className="space-y-3">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {tasks.length === 0 ? (
-          <div className="text-center text-gray-400 text-sm py-8">
+          <div style={{ textAlign: 'center', color: '#999', fontSize: '14px', padding: '30px 0' }}>
             No tasks
           </div>
         ) : (
@@ -72,20 +82,17 @@ const TaskBoard = ({ tasks = [], workspaceId, projectId, loading, error, onTaskU
     {
       id: 'TODO',
       title: 'To Do',
-      tasks: groupedTasks.TODO,
-      bgColor: 'bg-gray-50'
+      tasks: groupedTasks.TODO
     },
     {
       id: 'IN_PROGRESS',
       title: 'In Progress',
-      tasks: groupedTasks.IN_PROGRESS,
-      bgColor: 'bg-yellow-50'
+      tasks: groupedTasks.IN_PROGRESS
     },
     {
       id: 'DONE',
       title: 'Done',
-      tasks: groupedTasks.DONE,
-      bgColor: 'bg-green-50'
+      tasks: groupedTasks.DONE
     }
   ];
 
@@ -129,8 +136,8 @@ const TaskBoard = ({ tasks = [], workspaceId, projectId, loading, error, onTaskU
   // Loading state
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-gray-500">Loading tasks...</div>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+        <div style={{ color: '#666' }}>Loading tasks...</div>
       </div>
     );
   }
@@ -138,8 +145,8 @@ const TaskBoard = ({ tasks = [], workspaceId, projectId, loading, error, onTaskU
   // Error state
   if (error) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-red-600">Error loading tasks: {error}</div>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+        <div className="error">Error loading tasks: {error}</div>
       </div>
     );
   }
@@ -151,13 +158,12 @@ const TaskBoard = ({ tasks = [], workspaceId, projectId, loading, error, onTaskU
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
         {columns.map(column => (
           <DroppableColumn
             key={column.id}
             id={column.id}
             title={column.title}
-            bgColor={column.bgColor}
             tasks={column.tasks}
             workspaceId={workspaceId}
             projectId={projectId}
@@ -167,7 +173,7 @@ const TaskBoard = ({ tasks = [], workspaceId, projectId, loading, error, onTaskU
 
       <DragOverlay>
         {activeTask ? (
-          <div className="opacity-80">
+          <div style={{ opacity: 0.8 }}>
             <TaskCard
               task={activeTask}
               workspaceId={workspaceId}

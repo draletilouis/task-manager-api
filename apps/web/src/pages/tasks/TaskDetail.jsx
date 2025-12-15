@@ -133,9 +133,9 @@ const TaskDetail = () => {
 
   if (loading) {
     return (
-      <div className="h-full overflow-y-auto">
-        <div className="container mx-auto p-6">
-          <div className="text-gray-500">Loading task...</div>
+      <div style={{ height: '100%', overflowY: 'auto' }}>
+        <div className="container">
+          <div style={{ color: '#666' }}>Loading task...</div>
         </div>
       </div>
     );
@@ -143,9 +143,9 @@ const TaskDetail = () => {
 
   if (error) {
     return (
-      <div className="h-full overflow-y-auto">
-        <div className="container mx-auto p-6">
-          <div className="text-red-600">Error: {error}</div>
+      <div style={{ height: '100%', overflowY: 'auto' }}>
+        <div className="container">
+          <div className="error">Error: {error}</div>
         </div>
       </div>
     );
@@ -153,58 +153,53 @@ const TaskDetail = () => {
 
   if (!task) {
     return (
-      <div className="h-full overflow-y-auto">
-        <div className="container mx-auto p-6">
-          <div className="text-gray-500">Task not found</div>
+      <div style={{ height: '100%', overflowY: 'auto' }}>
+        <div className="container">
+          <div style={{ color: '#666' }}>Task not found</div>
         </div>
       </div>
     );
   }
 
-  const statusStyles = {
-    TODO: { color: 'bg-gray-200 text-gray-800', label: 'To Do' },
-    IN_PROGRESS: { color: 'bg-yellow-200 text-yellow-800', label: 'In Progress' },
-    DONE: { color: 'bg-green-200 text-green-800', label: 'Done' }
+  const statusLabels = {
+    TODO: 'To Do',
+    IN_PROGRESS: 'In Progress',
+    DONE: 'Done'
   };
 
-  const priorityColors = {
-    LOW: 'bg-green-500',
-    MEDIUM: 'bg-yellow-500',
-    HIGH: 'bg-red-500'
+  const priorityLabels = {
+    LOW: 'Low',
+    MEDIUM: 'Medium',
+    HIGH: 'High'
   };
 
   return (
-    <div className="h-full overflow-y-auto">
-      <div className="container mx-auto p-6">
+    <div style={{ height: '100%', overflowY: 'auto' }}>
+      <div className="container">
       {/* Breadcrumb Navigation */}
-      <nav className="text-sm mb-4 text-gray-600">
-        <Link to="/workspaces" className="hover:text-blue-600">Workspaces</Link>
-        <span className="mx-2">/</span>
-        <Link to={`/workspaces/${workspaceId}`} className="hover:text-blue-600">Workspace</Link>
-        <span className="mx-2">/</span>
-        <Link to={`/workspaces/${workspaceId}/projects/${projectId}`} className="hover:text-blue-600">Project</Link>
-        <span className="mx-2">/</span>
-        <span className="text-gray-900 font-medium">Task</span>
+      <nav style={{ fontSize: '14px', marginBottom: '15px', color: '#666' }}>
+        <Link to="/workspaces">Workspaces</Link>
+        <span style={{ margin: '0 8px' }}>/</span>
+        <Link to={`/workspaces/${workspaceId}`}>Workspace</Link>
+        <span style={{ margin: '0 8px' }}>/</span>
+        <Link to={`/workspaces/${workspaceId}/projects/${projectId}`}>Project</Link>
+        <span style={{ margin: '0 8px' }}>/</span>
+        <span style={{ color: '#333', fontWeight: '500' }}>Task</span>
       </nav>
 
       {/* Task Header */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <div className="flex justify-between items-start mb-4">
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">{task.title}</h1>
-            <div className="flex items-center gap-3">
-              {/* Priority Indicator */}
-              <div className="flex items-center gap-2">
-                <span className={`w-3 h-3 rounded-full ${priorityColors[task.priority]}`}></span>
-                <span className="text-sm text-gray-600">{task.priority}</span>
+      <div className="card" style={{ marginBottom: '20px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
+          <div style={{ flex: 1 }}>
+            <h1 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '10px' }}>{task.title}</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <span style={{ fontSize: '14px', color: '#666' }}>[{priorityLabels[task.priority]}]</span>
+                <span style={{ fontSize: '14px', fontWeight: '500' }}>{statusLabels[task.status]}</span>
               </div>
-              {/* Status Badge */}
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusStyles[task.status].color}`}>
-                {statusStyles[task.status].label}
-              </span>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div style={{ display: 'flex', gap: '10px' }}>
             <Button onClick={() => setIsEditModalOpen(true)} variant="secondary">
               Edit
             </Button>
@@ -215,27 +210,27 @@ const TaskDetail = () => {
         </div>
 
         {/* Description */}
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold text-gray-700 mb-2">Description</h2>
-          <p className="text-gray-600">{task.description || 'No description provided'}</p>
+        <div style={{ marginBottom: '15px' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>Description</h2>
+          <p style={{ color: '#666' }}>{task.description || 'No description provided'}</p>
         </div>
 
         {/* Due Date */}
         {task.dueDate && (
-          <div className="mb-4">
-            <h2 className="text-lg font-semibold text-gray-700 mb-2">Due Date</h2>
-            <p className="text-gray-600">📅 {new Date(task.dueDate).toLocaleDateString()}</p>
+          <div style={{ marginBottom: '15px' }}>
+            <h2 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>Due Date</h2>
+            <p style={{ color: '#666' }}>Due: {new Date(task.dueDate).toLocaleDateString()}</p>
           </div>
         )}
 
         {/* Assignee */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-lg font-semibold text-gray-700">Assigned To</h2>
+        <div style={{ marginBottom: '15px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <h2 style={{ fontSize: '18px', fontWeight: '600' }}>Assigned To</h2>
             <Button
               variant="secondary"
+              size="sm"
               onClick={() => setIsEditingAssignee(!isEditingAssignee)}
-              className="text-sm"
             >
               {isEditingAssignee ? 'Cancel' : 'Change'}
             </Button>
@@ -244,7 +239,7 @@ const TaskDetail = () => {
             <select
               value={task.assigneeId || ''}
               onChange={(e) => handleAssigneeChange(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={{ width: '100%' }}
             >
               <option value="">Unassigned</option>
               {members.map(member => (
@@ -254,10 +249,21 @@ const TaskDetail = () => {
               ))}
             </select>
           ) : (
-            <p className="text-gray-600">
+            <p style={{ color: '#666' }}>
               {task.assignee ? (
-                <span className="flex items-center gap-2">
-                  <span className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-medium">
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    background: '#0066cc',
+                    color: '#fff',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '14px',
+                    fontWeight: '500'
+                  }}>
                     {task.assignee.email?.charAt(0).toUpperCase() || '?'}
                   </span>
                   {task.assignee.email || 'Unknown User'}
@@ -270,30 +276,48 @@ const TaskDetail = () => {
         </div>
 
         {/* Status Update */}
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold text-gray-700 mb-2">Update Status</h2>
-          <div className="flex gap-2">
+        <div style={{ marginBottom: '15px' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>Update Status</h2>
+          <div style={{ display: 'flex', gap: '10px' }}>
             <button
               onClick={() => handleStatusChange('TODO')}
-              className={`px-4 py-2 rounded-md text-sm font-medium ${
-                task.status === 'TODO' ? 'bg-gray-300 text-gray-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '4px',
+                fontSize: '14px',
+                fontWeight: '500',
+                background: task.status === 'TODO' ? '#e0e0e0' : '#f5f5f5',
+                border: '1px solid #ddd',
+                cursor: 'pointer'
+              }}
             >
               To Do
             </button>
             <button
               onClick={() => handleStatusChange('IN_PROGRESS')}
-              className={`px-4 py-2 rounded-md text-sm font-medium ${
-                task.status === 'IN_PROGRESS' ? 'bg-yellow-300 text-yellow-800' : 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200'
-              }`}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '4px',
+                fontSize: '14px',
+                fontWeight: '500',
+                background: task.status === 'IN_PROGRESS' ? '#fff3cd' : '#fffbf0',
+                border: '1px solid #ddd',
+                cursor: 'pointer'
+              }}
             >
               In Progress
             </button>
             <button
               onClick={() => handleStatusChange('DONE')}
-              className={`px-4 py-2 rounded-md text-sm font-medium ${
-                task.status === 'DONE' ? 'bg-green-300 text-green-800' : 'bg-green-100 text-green-600 hover:bg-green-200'
-              }`}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '4px',
+                fontSize: '14px',
+                fontWeight: '500',
+                background: task.status === 'DONE' ? '#d4edda' : '#f0f8f0',
+                border: '1px solid #ddd',
+                cursor: 'pointer'
+              }}
             >
               Done
             </button>
@@ -301,30 +325,48 @@ const TaskDetail = () => {
         </div>
 
         {/* Priority Update */}
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold text-gray-700 mb-2">Update Priority</h2>
-          <div className="flex gap-2">
+        <div style={{ marginBottom: '15px' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>Update Priority</h2>
+          <div style={{ display: 'flex', gap: '10px' }}>
             <button
               onClick={() => handlePriorityChange('LOW')}
-              className={`px-4 py-2 rounded-md text-sm font-medium ${
-                task.priority === 'LOW' ? 'bg-green-300 text-green-800' : 'bg-green-100 text-green-600 hover:bg-green-200'
-              }`}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '4px',
+                fontSize: '14px',
+                fontWeight: '500',
+                background: task.priority === 'LOW' ? '#d4edda' : '#f0f8f0',
+                border: '1px solid #ddd',
+                cursor: 'pointer'
+              }}
             >
               Low
             </button>
             <button
               onClick={() => handlePriorityChange('MEDIUM')}
-              className={`px-4 py-2 rounded-md text-sm font-medium ${
-                task.priority === 'MEDIUM' ? 'bg-yellow-300 text-yellow-800' : 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200'
-              }`}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '4px',
+                fontSize: '14px',
+                fontWeight: '500',
+                background: task.priority === 'MEDIUM' ? '#fff3cd' : '#fffbf0',
+                border: '1px solid #ddd',
+                cursor: 'pointer'
+              }}
             >
               Medium
             </button>
             <button
               onClick={() => handlePriorityChange('HIGH')}
-              className={`px-4 py-2 rounded-md text-sm font-medium ${
-                task.priority === 'HIGH' ? 'bg-red-300 text-red-800' : 'bg-red-100 text-red-600 hover:bg-red-200'
-              }`}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '4px',
+                fontSize: '14px',
+                fontWeight: '500',
+                background: task.priority === 'HIGH' ? '#f8d7da' : '#fff5f5',
+                border: '1px solid #ddd',
+                cursor: 'pointer'
+              }}
             >
               High
             </button>
@@ -333,13 +375,13 @@ const TaskDetail = () => {
       </div>
 
       {/* Comments Section */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">
+      <div className="card">
+        <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '15px' }}>
           Comments ({comments.length})
         </h2>
 
         {/* Add Comment Form */}
-        <div className="mb-6">
+        <div style={{ marginBottom: '20px' }}>
           <CommentForm onSubmit={handleAddComment} />
         </div>
 
@@ -353,43 +395,45 @@ const TaskDetail = () => {
       </div>
 
       {/* Edit Task Modal */}
-      <Modal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        title="Edit Task"
-      >
-        <TaskForm
-          onSubmit={handleEditTask}
-          onCancel={() => setIsEditModalOpen(false)}
-          initialData={task}
-          workspaceId={workspaceId}
-          projectId={projectId}
-        />
-      </Modal>
+      {isEditModalOpen && (
+        <Modal
+          onClose={() => setIsEditModalOpen(false)}
+          title="Edit Task"
+        >
+          <TaskForm
+            onSubmit={handleEditTask}
+            onCancel={() => setIsEditModalOpen(false)}
+            initialData={task}
+            workspaceId={workspaceId}
+            projectId={projectId}
+          />
+        </Modal>
+      )}
 
       {/* Delete Confirmation Modal */}
-      <Modal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        title="Delete Task"
-      >
-        <div className="space-y-4">
-          <p className="text-gray-600">
-            Are you sure you want to delete this task? This action cannot be undone.
-          </p>
-          <div className="flex gap-2 justify-end">
-            <Button
-              onClick={() => setIsDeleteModalOpen(false)}
-              variant="secondary"
-            >
-              Cancel
-            </Button>
-            <Button onClick={handleDeleteTask} variant="danger">
-              Delete
-            </Button>
+      {isDeleteModalOpen && (
+        <Modal
+          onClose={() => setIsDeleteModalOpen(false)}
+          title="Delete Task"
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <p style={{ color: '#666' }}>
+              Are you sure you want to delete this task? This action cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <Button
+                onClick={() => setIsDeleteModalOpen(false)}
+                variant="secondary"
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleDeleteTask} variant="danger">
+                Delete
+              </Button>
+            </div>
           </div>
-        </div>
-      </Modal>
+        </Modal>
+      )}
       </div>
     </div>
   );

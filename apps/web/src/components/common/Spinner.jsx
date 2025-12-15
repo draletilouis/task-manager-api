@@ -1,28 +1,50 @@
-import { Loader2 } from 'lucide-react';
-
 const Spinner = ({
-  size = 'md',        // 'sm' | 'md' | 'lg'
-  fullScreen = true,  // Whether to show full screen or inline
-  message = ''        // Optional loading message
+  size = 'md',
+  fullScreen = true,
+  message = ''
 }) => {
-  const sizes = {
-    sm: 'w-5 h-5',
-    md: 'w-8 h-8',
-    lg: 'w-12 h-12'
+  const getSize = () => {
+    switch (size) {
+      case 'sm': return '20px';
+      case 'md': return '32px';
+      case 'lg': return '48px';
+      default: return '32px';
+    }
   };
 
   const spinnerElement = (
-    <div className="flex flex-col items-center justify-center space-y-3">
-      <Loader2 className={`${sizes[size]} text-blue-600 animate-spin`} />
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+      <div style={{
+        width: getSize(),
+        height: getSize(),
+        border: '3px solid #f3f3f3',
+        borderTop: '3px solid #0066cc',
+        borderRadius: '50%',
+        animation: 'spin 1s linear infinite'
+      }} />
       {message && (
-        <p className="text-sm text-gray-600 font-medium">{message}</p>
+        <p style={{ fontSize: '14px', color: '#666', fontWeight: '500' }}>{message}</p>
       )}
+      <style>
+        {`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}
+      </style>
     </div>
   );
 
   if (fullScreen) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        background: '#f5f5f5'
+      }}>
         {spinnerElement}
       </div>
     );

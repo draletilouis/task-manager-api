@@ -1,9 +1,7 @@
 import { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { AuthContext } from '../../context/AuthContextDefinition';
-import AuthLayout from '../../components/auth/AuthLayout';
 
 const Register = () => {
   const { register: registerUser } = useContext(AuthContext);
@@ -34,187 +32,131 @@ const Register = () => {
   };
 
   return (
-    <AuthLayout
-      title="Create your account"
-      subtitle="Join Task Manager to get organized today."
-    >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Name Field */}
-        <div>
-          <label
-            htmlFor="name"
-            className="block text-sm font-semibold text-gray-900 mb-2"
-          >
-            Full name
-          </label>
-          <input
-            id="name"
-            type="text"
-            autoComplete="name"
-            {...register('name', {
-              required: 'Name is required',
-              minLength: {
-                value: 2,
-                message: 'Name must be at least 2 characters'
-              }
-            })}
-            className={`w-full px-4 py-3 border ${
-              errors.name ? 'border-red-500' : 'border-gray-300'
-            } rounded-md text-base text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
-            placeholder="Enter your full name"
-          />
-          {errors.name && (
-            <p className="mt-2 text-sm text-red-600">{errors.name.message}</p>
-          )}
-        </div>
+    <div className="container">
+      <div className="card">
+        <h1>Create your account</h1>
+        <p>Join Task Manager to get organized today.</p>
 
-        {/* Email Field */}
-        <div>
-          <label
-            htmlFor="email"
-            className="block text-sm font-semibold text-gray-900 mb-2"
-          >
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            autoComplete="email"
-            {...register('email', {
-              required: 'Email is required',
-              pattern: {
-                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: 'Enter a valid email'
-              }
-            })}
-            className={`w-full px-4 py-3 border ${
-              errors.email ? 'border-red-500' : 'border-gray-300'
-            } rounded-md text-base text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
-            placeholder="Enter your email"
-          />
-          {errors.email && (
-            <p className="mt-2 text-sm text-red-600">{errors.email.message}</p>
-          )}
-        </div>
-
-        {/* Password Field */}
-        <div>
-          <label
-            htmlFor="password"
-            className="block text-sm font-semibold text-gray-900 mb-2"
-          >
-            Password
-          </label>
-          <div className="relative">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div>
+            <label htmlFor="name">Full name</label>
             <input
-              id="password"
-              type={showPassword ? 'text' : 'password'}
-              autoComplete="new-password"
-              {...register('password', {
-                required: 'Password is required',
+              id="name"
+              type="text"
+              autoComplete="name"
+              {...register('name', {
+                required: 'Name is required',
                 minLength: {
-                  value: 8,
-                  message: 'Password must be at least 8 characters'
-                },
-                pattern: {
-                  value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-                  message: 'Must contain uppercase, lowercase, and number'
+                  value: 2,
+                  message: 'Name must be at least 2 characters'
                 }
               })}
-              className={`w-full px-4 py-3 pr-12 border ${
-                errors.password ? 'border-red-500' : 'border-gray-300'
-              } rounded-md text-base text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
-              placeholder="Create a password"
+              placeholder="Enter your full name"
             />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
-            >
-              {showPassword ? (
-                <EyeOff className="h-6 w-6" />
-              ) : (
-                <Eye className="h-6 w-6" />
-              )}
-            </button>
+            {errors.name && (
+              <p className="error">{errors.name.message}</p>
+            )}
           </div>
-          {errors.password && (
-            <p className="mt-2 text-sm text-red-600">{errors.password.message}</p>
-          )}
-        </div>
 
-        {/* Confirm Password Field */}
-        <div>
-          <label
-            htmlFor="confirmPassword"
-            className="block text-sm font-semibold text-gray-900 mb-2"
-          >
-            Confirm password
-          </label>
-          <div className="relative">
+          <div>
+            <label htmlFor="email">Email</label>
             <input
-              id="confirmPassword"
-              type={showConfirmPassword ? 'text' : 'password'}
-              autoComplete="new-password"
-              {...register('confirmPassword', {
-                required: 'Please confirm your password',
-                validate: value =>
-                  value === password || 'Passwords do not match'
+              id="email"
+              type="email"
+              autoComplete="email"
+              {...register('email', {
+                required: 'Email is required',
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: 'Enter a valid email'
+                }
               })}
-              className={`w-full px-4 py-3 pr-12 border ${
-                errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
-              } rounded-md text-base text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
-              placeholder="Confirm your password"
+              placeholder="Enter your email"
             />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
-            >
-              {showConfirmPassword ? (
-                <EyeOff className="h-6 w-6" />
-              ) : (
-                <Eye className="h-6 w-6" />
-              )}
-            </button>
+            {errors.email && (
+              <p className="error">{errors.email.message}</p>
+            )}
           </div>
-          {errors.confirmPassword && (
-            <p className="mt-2 text-sm text-red-600">{errors.confirmPassword.message}</p>
+
+          <div>
+            <label htmlFor="password">Password</label>
+            <div>
+              <input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="new-password"
+                {...register('password', {
+                  required: 'Password is required',
+                  minLength: {
+                    value: 8,
+                    message: 'Password must be at least 8 characters'
+                  },
+                  pattern: {
+                    value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+                    message: 'Must contain uppercase, lowercase, and number'
+                  }
+                })}
+                placeholder="Create a password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? 'Hide' : 'Show'}
+              </button>
+            </div>
+            {errors.password && (
+              <p className="error">{errors.password.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label htmlFor="confirmPassword">Confirm password</label>
+            <div>
+              <input
+                id="confirmPassword"
+                type={showConfirmPassword ? 'text' : 'password'}
+                autoComplete="new-password"
+                {...register('confirmPassword', {
+                  required: 'Please confirm your password',
+                  validate: value =>
+                    value === password || 'Passwords do not match'
+                })}
+                placeholder="Confirm your password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+              >
+                {showConfirmPassword ? 'Hide' : 'Show'}
+              </button>
+            </div>
+            {errors.confirmPassword && (
+              <p className="error">{errors.confirmPassword.message}</p>
+            )}
+          </div>
+
+          {error && (
+            <div className="error">
+              {error}
+            </div>
           )}
-        </div>
 
-        {/* Error Message */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
-            {error}
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? 'Creating account...' : 'Create account'}
+          </button>
+
+          <div>
+            <p>
+              Already have an account?{' '}
+              <Link to="/login">Log in</Link>
+            </p>
           </div>
-        )}
-
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full bg-gray-900 hover:bg-black text-white font-bold py-3 px-4 rounded-full text-base transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isLoading ? 'Creating account...' : 'Create account'}
-        </button>
-
-        {/* Sign In Link */}
-        <div className="pt-6">
-          <p className="text-base text-gray-700">
-            Already have an account?{' '}
-            <Link
-              to="/login"
-              className="font-semibold text-blue-600 hover:text-blue-700"
-            >
-              Log in
-            </Link>
-          </p>
-        </div>
-      </form>
-    </AuthLayout>
+        </form>
+      </div>
+    </div>
   );
 };
 

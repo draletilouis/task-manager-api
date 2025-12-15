@@ -18,10 +18,14 @@ export const useProjects = (workspaceId) => {
     try {
       setLoading(true);
       const data = await getProjects(workspaceId);
-      setProjects(data);
+      // Extract projects array from response object
+      const projectsArray = data?.projects || data;
+      // Ensure data is always an array
+      setProjects(Array.isArray(projectsArray) ? projectsArray : []);
       setError(null);
     } catch (err) {
       setError(err.message || 'Failed to fetch projects');
+      setProjects([]);
     } finally {
       setLoading(false);
     }
@@ -35,7 +39,8 @@ export const useProjects = (workspaceId) => {
   // Create new project
   const addProject = async (projectData) => {
     try {
-      const newProject = await createProject(workspaceId, projectData);
+      const response = await createProject(workspaceId, projectData);
+      const newProject = response?.project || response;
       setProjects([...projects, newProject]);
       return newProject;
     } catch (err) {
@@ -46,7 +51,8 @@ export const useProjects = (workspaceId) => {
   // Update existing project
   const editProject = async (projectId, projectData) => {
     try {
-      const updated = await updateProject(workspaceId, projectId, projectData);
+      const response = await updateProject(workspaceId, projectId, projectData);
+      const updated = response?.project || response;
       setProjects(projects.map(p => p.id === projectId ? updated : p));
       return updated;
     } catch (err) {

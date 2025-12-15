@@ -1,9 +1,29 @@
 import { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { AuthContext } from '../../context/AuthContextDefinition';
-import AuthLayout from '../../components/auth/AuthLayout';
+import {
+  Box,
+  Grid,
+  TextField,
+  Button,
+  Typography,
+  InputAdornment,
+  IconButton,
+  Alert,
+  Link as MuiLink,
+  Stack,
+  Paper,
+} from '@mui/material';
+import {
+  Visibility,
+  VisibilityOff,
+  Email,
+  Lock,
+  CheckCircleOutline,
+  GroupOutlined,
+  AssignmentTurnedInOutlined,
+} from '@mui/icons-material';
 
 const Login = () => {
   const { login } = useContext(AuthContext);
@@ -12,10 +32,15 @@ const Login = () => {
   const [error, setError] = useState('');
 
   const {
-    register,
+    control,
     handleSubmit,
     formState: { errors }
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      email: '',
+      password: ''
+    }
+  });
 
   const onSubmit = async (data) => {
     setIsLoading(true);
@@ -30,123 +55,348 @@ const Login = () => {
   };
 
   return (
-    <AuthLayout
-      title="Log in to Task Manager"
-      subtitle="Welcome back! Please enter your details."
-    >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Email Field */}
-        <div>
-          <label
-            htmlFor="email"
-            className="block text-sm font-semibold text-gray-900 mb-2"
-          >
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            autoComplete="email"
-            {...register('email', {
-              required: 'Email is required',
-              pattern: {
-                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: 'Enter a valid email'
-              }
-            })}
-            className={`w-full px-4 py-3 border ${
-              errors.email ? 'border-red-500' : 'border-gray-300'
-            } rounded-md text-base text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
-            placeholder="Enter your email"
-          />
-          {errors.email && (
-            <p className="mt-2 text-sm text-red-600">{errors.email.message}</p>
-          )}
-        </div>
-
-        {/* Password Field */}
-        <div>
-          <label
-            htmlFor="password"
-            className="block text-sm font-semibold text-gray-900 mb-2"
-          >
-            Password
-          </label>
-          <div className="relative">
-            <input
-              id="password"
-              type={showPassword ? 'text' : 'password'}
-              autoComplete="current-password"
-              {...register('password', {
-                required: 'Password is required',
-                minLength: {
-                  value: 6,
-                  message: 'Password must be at least 6 characters'
-                }
-              })}
-              className={`w-full px-4 py-3 pr-12 border ${
-                errors.password ? 'border-red-500' : 'border-gray-300'
-              } rounded-md text-base text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
-              placeholder="Enter your password"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
-            >
-              {showPassword ? (
-                <EyeOff className="h-6 w-6" />
-              ) : (
-                <Eye className="h-6 w-6" />
-              )}
-            </button>
-          </div>
-          {errors.password && (
-            <p className="mt-2 text-base text-red-600">{errors.password.message}</p>
-          )}
-        </div>
-
-        {/* Forgot Password */}
-        <div className="text-right">
-          <Link
-            to="/forgot-password"
-            className="text-sm font-medium text-blue-600 hover:text-blue-700"
-          >
-            Forgot password?
-          </Link>
-        </div>
-
-        {/* Error Message */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
-            {error}
-          </div>
-        )}
-
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full bg-gray-900 hover:bg-black text-white font-bold py-3 px-4 rounded-full text-base transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+    <Box sx={{ minHeight: '100vh', display: 'flex', width: '100%' }}>
+      <Grid container sx={{ height: '100vh', width: '100%', margin: 0 }}>
+        {/* Left Side - Green Branded Section */}
+        <Grid
+          item
+          xs={false}
+          md={6}
+          sx={{
+            background: 'linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%)',
+            display: { xs: 'none', md: 'flex' },
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            color: 'white',
+            px: 6,
+            position: 'relative',
+            overflow: 'hidden',
+            width: '50%',
+            maxWidth: '50%',
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: '-50%',
+              right: '-20%',
+              width: '600px',
+              height: '600px',
+              background: 'rgba(255, 255, 255, 0.05)',
+              borderRadius: '50%',
+            },
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              bottom: '-30%',
+              left: '-15%',
+              width: '500px',
+              height: '500px',
+              background: 'rgba(255, 255, 255, 0.03)',
+              borderRadius: '50%',
+            }
+          }}
         >
-          {isLoading ? 'Logging in...' : 'Log in'}
-        </button>
-
-        {/* Sign Up Link */}
-        <div className="pt-6">
-          <p className="text-base text-gray-700">
-            Don't have an account?{' '}
-            <Link
-              to="/register"
-              className="font-semibold text-blue-600 hover:text-blue-700"
+          <Box sx={{ zIndex: 1, textAlign: 'center', maxWidth: '500px' }}>
+            {/* Logo Placeholder */}
+            <Box
+              sx={{
+                width: 120,
+                height: 120,
+                mx: 'auto',
+                mb: 4,
+                borderRadius: '24px',
+                background: 'rgba(255, 255, 255, 0.15)',
+                backdropFilter: 'blur(10px)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '2px solid rgba(255, 255, 255, 0.2)',
+              }}
             >
-              Sign up
-            </Link>
-          </p>
-        </div>
-      </form>
-    </AuthLayout>
+              <Typography variant="h3" sx={{ fontWeight: 700, color: 'white' }}>
+                TM
+              </Typography>
+            </Box>
+
+            <Typography variant="h3" sx={{ fontWeight: 700, mb: 2 }}>
+              Task Manager
+            </Typography>
+            <Typography variant="h6" sx={{ mb: 5, opacity: 0.9, fontWeight: 400 }}>
+              Organize, Collaborate, and Achieve More
+            </Typography>
+
+            {/* Features */}
+            <Stack spacing={3} sx={{ textAlign: 'left' }}>
+              <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                <CheckCircleOutline sx={{ fontSize: 32, mt: 0.5 }} />
+                <Box>
+                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
+                    Streamlined Workflow
+                  </Typography>
+                  <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                    Manage tasks efficiently with our intuitive interface
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                <GroupOutlined sx={{ fontSize: 32, mt: 0.5 }} />
+                <Box>
+                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
+                    Team Collaboration
+                  </Typography>
+                  <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                    Work together seamlessly across workspaces and projects
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                <AssignmentTurnedInOutlined sx={{ fontSize: 32, mt: 0.5 }} />
+                <Box>
+                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
+                    Track Progress
+                  </Typography>
+                  <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                    Stay on top of deadlines and monitor project status
+                  </Typography>
+                </Box>
+              </Box>
+            </Stack>
+          </Box>
+        </Grid>
+
+        {/* Right Side - White Login Form */}
+        <Grid
+          item
+          xs={12}
+          md={6}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#ffffff',
+            px: { xs: 3, sm: 6, md: 8 },
+            width: '50%',
+            maxWidth: '50%',
+          }}
+        >
+          <Box sx={{ width: '100%', maxWidth: '500px', py: 4 }}>
+            {/* Mobile Logo */}
+            <Box
+              sx={{
+                display: { xs: 'block', md: 'none' },
+                textAlign: 'center',
+                mb: 4,
+              }}
+            >
+              <Box
+                sx={{
+                  width: 80,
+                  height: 80,
+                  mx: 'auto',
+                  mb: 2,
+                  borderRadius: '16px',
+                  background: 'linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Typography variant="h4" sx={{ fontWeight: 700, color: 'white' }}>
+                  TM
+                </Typography>
+              </Box>
+            </Box>
+
+            {/* Form Header */}
+            <Box sx={{ mb: 5 }}>
+              <Typography
+                variant="h3"
+                sx={{
+                  fontWeight: 700,
+                  color: '#1b5e20',
+                  mb: 1,
+                  fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' }
+                }}
+              >
+                Welcome Back
+              </Typography>
+              <Typography variant="h6" color="text.secondary" sx={{ fontWeight: 400 }}>
+                Sign in to continue to your account
+              </Typography>
+            </Box>
+
+            {/* Error Alert */}
+            {error && (
+              <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError('')}>
+                {error}
+              </Alert>
+            )}
+
+            {/* Login Form */}
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <Stack spacing={3}>
+                {/* Email Field */}
+                <Box>
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ mb: 1, fontWeight: 600, color: '#1b5e20' }}
+                  >
+                    Email Address
+                  </Typography>
+                  <Controller
+                    name="email"
+                    control={control}
+                    rules={{
+                      required: 'Email is required',
+                      pattern: {
+                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                        message: 'Enter a valid email address'
+                      }
+                    }}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        placeholder="Enter your email"
+                        type="email"
+                        fullWidth
+                        size="large"
+                        autoComplete="email"
+                        error={!!errors.email}
+                        helperText={errors.email?.message}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <Email color="action" />
+                            </InputAdornment>
+                          ),
+                          sx: { fontSize: '1.1rem' }
+                        }}
+                      />
+                    )}
+                  />
+                </Box>
+
+                {/* Password Field */}
+                <Box>
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ mb: 1, fontWeight: 600, color: '#1b5e20' }}
+                  >
+                    Password
+                  </Typography>
+                  <Controller
+                    name="password"
+                    control={control}
+                    rules={{
+                      required: 'Password is required',
+                      minLength: {
+                        value: 6,
+                        message: 'Password must be at least 6 characters'
+                      }
+                    }}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        placeholder="Enter your password"
+                        type={showPassword ? 'text' : 'password'}
+                        fullWidth
+                        size="large"
+                        autoComplete="current-password"
+                        error={!!errors.password}
+                        helperText={errors.password?.message}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <Lock color="action" />
+                            </InputAdornment>
+                          ),
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <IconButton
+                                onClick={() => setShowPassword(!showPassword)}
+                                edge="end"
+                                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                              >
+                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                              </IconButton>
+                            </InputAdornment>
+                          ),
+                          sx: { fontSize: '1.1rem' }
+                        }}
+                      />
+                    )}
+                  />
+                </Box>
+
+                {/* Forgot Password Link */}
+                <Box sx={{ textAlign: 'right' }}>
+                  <MuiLink
+                    component={Link}
+                    to="/forgot-password"
+                    variant="body1"
+                    underline="hover"
+                    sx={{ fontWeight: 600, color: 'primary.main' }}
+                  >
+                    Forgot password?
+                  </MuiLink>
+                </Box>
+
+                {/* Submit Button */}
+                <Button
+                  type="submit"
+                  variant="contained"
+                  size="large"
+                  fullWidth
+                  disabled={isLoading}
+                  sx={{
+                    py: 2,
+                    fontSize: '1.1rem',
+                    fontWeight: 600,
+                    textTransform: 'none',
+                    background: 'linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%)',
+                    boxShadow: '0 4px 14px rgba(46, 125, 50, 0.3)',
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, #1b5e20 0%, #0d3d10 100%)',
+                      boxShadow: '0 6px 20px rgba(46, 125, 50, 0.4)',
+                    },
+                    '&:disabled': {
+                      background: '#e0e0e0',
+                    }
+                  }}
+                >
+                  {isLoading ? 'Signing in...' : 'Sign In'}
+                </Button>
+              </Stack>
+            </form>
+
+            {/* Sign Up Link */}
+            <Box sx={{ textAlign: 'center', mt: 4 }}>
+              <Typography variant="body1" color="text.secondary">
+                Don't have an account?{' '}
+                <MuiLink
+                  component={Link}
+                  to="/register"
+                  variant="body1"
+                  underline="hover"
+                  sx={{ fontWeight: 700, color: 'primary.main' }}
+                >
+                  Sign up for free
+                </MuiLink>
+              </Typography>
+            </Box>
+
+            {/* Footer */}
+            <Box sx={{ textAlign: 'center', mt: 6 }}>
+              <Typography variant="body2" color="text.secondary">
+                © {new Date().getFullYear()} Task Manager. All rights reserved.
+              </Typography>
+            </Box>
+          </Box>
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 

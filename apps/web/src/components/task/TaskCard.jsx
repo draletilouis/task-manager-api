@@ -3,27 +3,11 @@ import { useNavigate } from 'react-router-dom';
 const TaskCard = ({ task, workspaceId, projectId }) => {
   const navigate = useNavigate();
 
-  // Status badge styles
-  const statusStyles = {
-    TODO: {
-      color: 'bg-gray-200 text-gray-800',
-      label: 'To Do'
-    },
-    IN_PROGRESS: {
-      color: 'bg-yellow-200 text-yellow-800',
-      label: 'In Progress'
-    },
-    DONE: {
-      color: 'bg-green-200 text-green-800',
-      label: 'Done'
-    }
-  };
-
-  // Priority indicator styles (colored dot)
-  const priorityColors = {
-    LOW: 'bg-green-500',
-    MEDIUM: 'bg-yellow-500',
-    HIGH: 'bg-red-500'
+  // Status labels
+  const statusLabels = {
+    TODO: 'To Do',
+    IN_PROGRESS: 'In Progress',
+    DONE: 'Done'
   };
 
   // Priority labels
@@ -54,59 +38,54 @@ const TaskCard = ({ task, workspaceId, projectId }) => {
   return (
     <div
       onClick={handleClick}
-      className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg hover:border-blue-300 transition-all cursor-pointer"
+      className="card"
+      style={{ cursor: 'pointer' }}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => e.key === 'Enter' && handleClick()}
     >
-      {/* Header: Priority indicator + Title */}
-      <div className="flex items-start gap-2 mb-2">
-        {/* Priority dot */}
-        <span
-          className={`h-3 w-3 rounded-full flex-shrink-0 mt-1 ${priorityColors[task.priority]}`}
-          title={priorityLabels[task.priority] + ' priority'}
-        />
-
-        {/* Task title */}
-        <h3 className="font-semibold text-gray-900 line-clamp-2 flex-1">
+      {/* Header: Priority + Title */}
+      <div style={{ marginBottom: '10px' }}>
+        <span style={{ fontSize: '12px', color: '#666' }}>
+          [{priorityLabels[task.priority]}]
+        </span>
+        <h3 style={{ fontSize: '16px', fontWeight: '600', margin: '5px 0' }}>
           {task.title}
         </h3>
       </div>
 
       {/* Description preview */}
       {task.description && (
-        <p className="text-sm text-gray-600 line-clamp-2 mb-3">
+        <p style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>
           {task.description}
         </p>
       )}
 
-      {/* Footer: Status badge + Metadata */}
-      <div className="flex items-center justify-between">
+      {/* Footer: Status + Metadata */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        borderTop: '1px solid #eee',
+        paddingTop: '10px'
+      }}>
         {/* Status badge */}
-        <span
-          className={`px-2 py-1 text-xs font-medium rounded ${statusStyles[task.status].color}`}
-        >
-          {statusStyles[task.status].label}
+        <span style={{ fontSize: '12px', fontWeight: '500' }}>
+          {statusLabels[task.status]}
         </span>
 
         {/* Due date */}
         {task.dueDate && (
-          <div className="flex items-center gap-1 text-xs text-gray-500">
-            <span>📅</span>
-            <span className={isOverdue(task.dueDate) ? 'text-red-600 font-medium' : ''}>
-              {formatDate(task.dueDate)}
-            </span>
+          <div style={{ fontSize: '12px', color: isOverdue(task.dueDate) ? '#d32f2f' : '#666' }}>
+            Due: {formatDate(task.dueDate)}
           </div>
         )}
       </div>
 
       {/* Assignee (if available) */}
       {task.assignee && (
-        <div className="mt-2 flex items-center gap-2 text-xs text-gray-600">
-          <div className="h-6 w-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-medium">
-            {task.assignee.name ? task.assignee.name.charAt(0).toUpperCase() : '?'}
-          </div>
-          <span>{task.assignee.name || task.assignee.email}</span>
+        <div style={{ marginTop: '10px', fontSize: '12px', color: '#666' }}>
+          Assigned to: {task.assignee.name || task.assignee.email}
         </div>
       )}
     </div>

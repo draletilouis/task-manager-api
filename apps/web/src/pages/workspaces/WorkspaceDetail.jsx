@@ -1,20 +1,56 @@
 import { useParams, Link } from 'react-router-dom';
 import { useProjects } from '../../hooks/useProjects';
 import { useState, useEffect } from 'react';
-import Button from '../../components/common/Button';
-import Modal from '../../components/common/Modal';
-import Spinner from '../../components/common/Spinner';
-import { SkeletonCard } from '../../components/common/SkeletonLoader';
 import { getWorkspace, getWorkspaceMembers, addWorkspaceMember, removeWorkspaceMember, updateWorkspaceMemberRole } from '../../api/workspaces';
 import { useToast } from '../../context/ToastContext';
 import { isValidEmail } from '../../utils/validation';
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Grid,
+  Card,
+  CardContent,
+  CardActions,
+  Paper,
+  CircularProgress,
+  Alert,
+  Breadcrumbs,
+  Chip,
+  Avatar,
+  IconButton,
+  Menu,
+  MenuItem,
+  Divider,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  ListItemSecondaryAction,
+  Fade,
+} from '@mui/material';
+import {
+  Add as AddIcon,
+  Article as ArticleIcon,
+  MoreVert as MoreVertIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  People as PeopleIcon,
+  PersonAdd as PersonAddIcon,
+  ArrowForward as ArrowForwardIcon,
+  FolderOpen as FolderOpenIcon,
+} from '@mui/icons-material';
 
 const WorkspaceDetail = () => {
-  // Get workspaceId from URL
   const { workspaceId } = useParams();
   const toast = useToast();
 
-  // Fetch projects for this workspace
   const {
     projects,
     loading,
@@ -32,11 +68,9 @@ const WorkspaceDetail = () => {
     description: ''
   });
 
-  // Workspace state
   const [workspace, setWorkspace] = useState(null);
   const [loadingWorkspace, setLoadingWorkspace] = useState(true);
 
-  // Members state
   const [members, setMembers] = useState([]);
   const [loadingMembers, setLoadingMembers] = useState(true);
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -44,7 +78,6 @@ const WorkspaceDetail = () => {
   const [emailError, setEmailError] = useState('');
   const [isInviting, setIsInviting] = useState(false);
 
-  // Fetch workspace details
   useEffect(() => {
     const fetchWorkspace = async () => {
       try {
@@ -53,17 +86,15 @@ const WorkspaceDetail = () => {
         setWorkspace(data);
       } catch (error) {
         console.error('Failed to fetch workspace:', error);
+        toast.error('Failed to load workspace');
       } finally {
         setLoadingWorkspace(false);
       }
     };
 
-    if (workspaceId) {
-      fetchWorkspace();
-    }
+    fetchWorkspace();
   }, [workspaceId]);
 
-  // Fetch members
   useEffect(() => {
     const fetchMembers = async () => {
       try {
@@ -72,17 +103,15 @@ const WorkspaceDetail = () => {
         setMembers(data);
       } catch (error) {
         console.error('Failed to fetch members:', error);
+        toast.error('Failed to load members');
       } finally {
         setLoadingMembers(false);
       }
     };
 
-    if (workspaceId) {
-      fetchMembers();
-    }
+    fetchMembers();
   }, [workspaceId]);
 
-  // Handle create project
   const handleCreateProject = async (e) => {
     e.preventDefault();
     try {
@@ -90,12 +119,11 @@ const WorkspaceDetail = () => {
       setShowCreateModal(false);
       setFormData({ name: '', description: '' });
       toast.success('Project created successfully');
-    } catch (err) {
-      toast.error(err.message);
+    } catch (error) {
+      toast.error(error.message);
     }
   };
 
-  // Handle edit project
   const handleEditProjectClick = (project) => {
     setSelectedProject(project);
     setFormData({
@@ -113,28 +141,26 @@ const WorkspaceDetail = () => {
       setFormData({ name: '', description: '' });
       setSelectedProject(null);
       toast.success('Project updated successfully');
-    } catch (err) {
-      toast.error(err.message);
+    } catch (error) {
+      toast.error(error.message);
     }
   };
 
-  // Handle delete project
   const handleDeleteProject = async (projectId) => {
-    if (window.confirm('Delete this project?')) {
+    if (window.confirm('Are you sure you want to delete this project?')) {
       try {
         await removeProject(projectId);
         toast.success('Project deleted successfully');
-      } catch (err) {
-        toast.error(err.message);
+      } catch (error) {
+        toast.error(error.message);
       }
     }
   };
 
-  // Handle invite member
   const handleInviteMember = async (e) => {
     e.preventDefault();
+    setEmailError('');
 
-    // Validate email
     if (!isValidEmail(inviteEmail)) {
       setEmailError('Please enter a valid email address');
       return;
@@ -142,338 +168,397 @@ const WorkspaceDetail = () => {
 
     try {
       setIsInviting(true);
-      setEmailError('');
       await addWorkspaceMember(workspaceId, { email: inviteEmail });
+      const updatedMembers = await getWorkspaceMembers(workspaceId);
+      setMembers(updatedMembers);
       setShowInviteModal(false);
       setInviteEmail('');
-      // Refresh members list
-      const data = await getWorkspaceMembers(workspaceId);
-      setMembers(data);
       toast.success('Member invited successfully');
-    } catch (err) {
-      toast.error(err.message);
+    } catch (error) {
+      toast.error(error.message);
     } finally {
       setIsInviting(false);
     }
   };
 
-  // Handle change member role
-  const handleChangeRole = async (memberId, currentRole) => {
-    const newRole = currentRole === 'ADMIN' ? 'MEMBER' : 'ADMIN';
-    if (window.confirm(`Change this member's role to ${newRole}?`)) {
-      try {
-        await updateWorkspaceMemberRole(workspaceId, memberId, newRole);
-        // Refresh members list
-        const data = await getWorkspaceMembers(workspaceId);
-        setMembers(data);
-        toast.success('Member role updated successfully');
-      } catch (err) {
-        toast.error(err.message);
-      }
-    }
-  };
-
-  // Handle remove member
   const handleRemoveMember = async (memberId) => {
-    if (window.confirm('Remove this member from the workspace?')) {
+    if (window.confirm('Are you sure you want to remove this member?')) {
       try {
         await removeWorkspaceMember(workspaceId, memberId);
-        // Refresh members list
-        const data = await getWorkspaceMembers(workspaceId);
-        setMembers(data);
+        const updatedMembers = await getWorkspaceMembers(workspaceId);
+        setMembers(updatedMembers);
         toast.success('Member removed successfully');
-      } catch (err) {
-        toast.error(err.message);
+      } catch (error) {
+        toast.error(error.message);
       }
     }
   };
 
-  if (loading || loadingWorkspace) return <Spinner />;
-  if (error) return <div className="text-red-600">Error: {error}</div>;
+  const stringToColor = (string) => {
+    if (!string) return 'hsl(200, 70%, 50%)';
+    let hash = 0;
+    for (let i = 0; i < string.length; i++) {
+      hash = string.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const hue = hash % 360;
+    return `hsl(${hue}, 70%, 50%)`;
+  };
+
+  if (loadingWorkspace) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+        <CircularProgress size={60} />
+      </Box>
+    );
+  }
 
   return (
-    <div className="h-full overflow-y-auto">
-      <div className="container mx-auto p-6">
-      {/* Breadcrumb navigation */}
-      <nav className="mb-6 text-sm">
-        <Link to="/workspaces" className="text-blue-600 hover:underline">
-          Workspaces
-        </Link>
-        <span className="mx-2 text-gray-400">/</span>
-        <span className="text-gray-600">{workspace?.name || 'Workspace'}</span>
-      </nav>
-
-      {/* Header */}
-      <div className="flex justify-between items-start mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+    <Box sx={{ height: '100%', overflowY: 'auto', bgcolor: 'grey.50' }}>
+      <Container maxWidth="xl" sx={{ py: 4 }}>
+        {/* Breadcrumbs */}
+        <Breadcrumbs sx={{ mb: 3 }}>
+          <Link to="/workspaces" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Typography color="text.secondary" sx={{ '&:hover': { color: 'primary.main' } }}>
+              Workspaces
+            </Typography>
+          </Link>
+          <Typography color="text.primary" sx={{ fontWeight: 600 }}>
             {workspace?.name || 'Workspace'}
-          </h1>
-          {workspace?.description && (
-            <p className="text-gray-600 mt-2">
-              {workspace.description}
-            </p>
-          )}
-        </div>
-        <Button onClick={() => setShowCreateModal(true)}>
-          + New Project
-        </Button>
-      </div>
+          </Typography>
+        </Breadcrumbs>
 
-      {/* Projects section */}
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Projects</h2>
-        
-        {projects.length === 0 ? (
-          <div className="text-center py-8 bg-gray-50 rounded-lg">
-            <p className="text-gray-500">No projects yet</p>
-            <Button 
+        {/* Header */}
+        <Box sx={{ mb: 5 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+            <Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+                <FolderOpenIcon sx={{ fontSize: 40, color: 'primary.main' }} />
+                <Typography variant="h3" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                  {workspace?.name || 'Workspace'}
+                </Typography>
+              </Box>
+              {workspace?.description && (
+                <Typography variant="body1" color="text.secondary" sx={{ ml: 7 }}>
+                  {workspace.description}
+                </Typography>
+              )}
+            </Box>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
               onClick={() => setShowCreateModal(true)}
-              className="mt-4"
+              sx={{
+                px: 3,
+                py: 1.5,
+                fontWeight: 600,
+                textTransform: 'none',
+                boxShadow: '0 4px 14px rgba(46, 125, 50, 0.3)',
+              }}
             >
-              Create First Project
+              New Project
             </Button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {projects.map(project => (
-              <div 
-                key={project.id}
-                className="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow"
-              >
-                <h3 className="font-semibold text-lg mb-2">
-                  {project.name}
-                </h3>
-                <p className="text-gray-600 text-sm mb-4">
-                  {project.description}
-                </p>
-                
-                <div className="flex gap-2">
-                  <Link
-                    to={`/workspaces/${workspaceId}/projects/${project.id}`}
-                    className="flex-1"
-                  >
-                    <Button className="w-full">View</Button>
-                  </Link>
-                  <Button
-                    variant="secondary"
-                    onClick={() => handleEditProjectClick(project)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="danger"
-                    onClick={() => handleDeleteProject(project.id)}
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+          </Box>
+        </Box>
 
-      {/* Members section */}
-      <div>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Members</h2>
-          <Button onClick={() => setShowInviteModal(true)}>
-            + Invite Member
-          </Button>
-        </div>
+        {/* Projects Section */}
+        <Box sx={{ mb: 6 }}>
+          <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>
+            Projects
+          </Typography>
 
-        {loadingMembers ? (
-          <div className="bg-white rounded-lg border divide-y">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="p-4">
-                <SkeletonCard />
-              </div>
-            ))}
-          </div>
-        ) : members.length === 0 ? (
-          <div className="bg-gray-50 rounded-lg p-4 text-center">
-            <p className="text-gray-500">No members yet</p>
-          </div>
-        ) : (
-          <div className="bg-white rounded-lg border divide-y">
-            {members.map(member => (
-              <div key={member.userId} className="p-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-medium">
-                    {member.user?.email?.charAt(0).toUpperCase() || '?'}
-                  </div>
-                  <div>
-                    <p className="font-medium">{member.user?.email || 'Unknown User'}</p>
-                    <div className="flex items-center gap-2">
-                      <span className={`text-xs px-2 py-1 rounded ${
-                        member.role === 'OWNER' ? 'bg-purple-100 text-purple-700' :
-                        member.role === 'ADMIN' ? 'bg-blue-100 text-blue-700' :
-                        'bg-gray-100 text-gray-700'
-                      }`}>
-                        {member.role}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                {member.role !== 'OWNER' && (
-                  <div className="flex gap-2">
-                    <Button
-                      variant="secondary"
-                      onClick={() => handleChangeRole(member.userId, member.role)}
-                    >
-                      {member.role === 'ADMIN' ? 'Make Member' : 'Make Admin'}
-                    </Button>
-                    <Button
-                      variant="danger"
-                      onClick={() => handleRemoveMember(member.userId)}
-                    >
-                      Remove
-                    </Button>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Create Project Modal */}
-      {showCreateModal && (
-        <Modal 
-          onClose={() => setShowCreateModal(false)}
-          title="Create Project"
-        >
-          <form onSubmit={handleCreateProject}>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Project Name *
-              </label>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Description
-              </label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                rows="3"
-              />
-            </div>
-
-            <div className="flex gap-3">
-              <Button type="submit" className="flex-1">Create</Button>
-              <Button 
-                type="button"
-                variant="secondary"
-                onClick={() => setShowCreateModal(false)}
-              >
-                Cancel
-              </Button>
-            </div>
-          </form>
-        </Modal>
-      )}
-
-      {/* Edit Project Modal */}
-      {showEditProjectModal && (
-        <Modal
-          onClose={() => setShowEditProjectModal(false)}
-          title="Edit Project"
-        >
-          <form onSubmit={handleUpdateProject}>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Project Name *
-              </label>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Description
-              </label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                rows="3"
-              />
-            </div>
-
-            <div className="flex gap-3">
-              <Button type="submit" className="flex-1">Update</Button>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => setShowEditProjectModal(false)}
-              >
-                Cancel
-              </Button>
-            </div>
-          </form>
-        </Modal>
-      )}
-
-      {/* Invite Member Modal */}
-      {showInviteModal && (
-        <Modal
-          onClose={() => setShowInviteModal(false)}
-          title="Invite Member"
-        >
-          <form onSubmit={handleInviteMember}>
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address *
-              </label>
-              <input
-                type="email"
-                value={inviteEmail}
-                onChange={(e) => {
-                  setInviteEmail(e.target.value);
-                  setEmailError('');
+          {loading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 5 }}>
+              <CircularProgress />
+            </Box>
+          ) : error ? (
+            <Alert severity="error">{error}</Alert>
+          ) : projects.length === 0 ? (
+            <Fade in={true}>
+              <Paper
+                elevation={0}
+                sx={{
+                  textAlign: 'center',
+                  py: 8,
+                  px: 4,
+                  border: '2px dashed',
+                  borderColor: 'grey.300',
+                  borderRadius: 2,
                 }}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-                  emailError ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
-                }`}
-                placeholder="member@example.com"
-                required
-              />
-              {emailError && <p className="mt-1 text-sm text-red-600">{emailError}</p>}
-            </div>
-
-            <div className="flex gap-3">
-              <Button type="submit" className="flex-1" disabled={isInviting}>
-                {isInviting ? 'Inviting...' : 'Invite'}
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => setShowInviteModal(false)}
               >
-                Cancel
-              </Button>
-            </div>
-          </form>
-        </Modal>
-      )}
-      </div>
-    </div>
+                <ArticleIcon sx={{ fontSize: 60, color: 'primary.main', mb: 2, opacity: 0.7 }} />
+                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+                  No projects yet
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+                  Get started by creating your first project
+                </Typography>
+                <Button
+                  variant="contained"
+                  startIcon={<AddIcon />}
+                  onClick={() => setShowCreateModal(true)}
+                  sx={{ textTransform: 'none', fontWeight: 600 }}
+                >
+                  Create First Project
+                </Button>
+              </Paper>
+            </Fade>
+          ) : (
+            <Grid container spacing={3}>
+              {projects.map((project, index) => (
+                <Grid item xs={12} sm={6} md={4} key={project.id}>
+                  <Fade in={true} timeout={300 + index * 100}>
+                    <Card
+                      elevation={0}
+                      sx={{
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        border: '1px solid',
+                        borderColor: 'grey.200',
+                        borderRadius: 2,
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          borderColor: 'primary.main',
+                          boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                          transform: 'translateY(-4px)',
+                        },
+                      }}
+                    >
+                      <CardContent sx={{ flexGrow: 1 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                          <ArticleIcon sx={{ color: stringToColor(project.name), fontSize: 28 }} />
+                          <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                            {project.name}
+                          </Typography>
+                        </Box>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{
+                            mb: 2,
+                            minHeight: '40px',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                          }}
+                        >
+                          {project.description || 'No description'}
+                        </Typography>
+                      </CardContent>
+                      <Divider />
+                      <CardActions sx={{ p: 2, justifyContent: 'space-between' }}>
+                        <Button
+                          component={Link}
+                          to={`/workspaces/${workspaceId}/projects/${project.id}`}
+                          endIcon={<ArrowForwardIcon />}
+                          size="small"
+                          sx={{ textTransform: 'none', fontWeight: 600 }}
+                        >
+                          View
+                        </Button>
+                        <Box>
+                          <IconButton size="small" onClick={() => handleEditProjectClick(project)}>
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleDeleteProject(project.id)}
+                            sx={{ color: 'error.main' }}
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </Box>
+                      </CardActions>
+                    </Card>
+                  </Fade>
+                </Grid>
+              ))}
+            </Grid>
+          )}
+        </Box>
+
+        {/* Members Section */}
+        <Box>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Typography variant="h5" sx={{ fontWeight: 700 }}>
+              Members
+            </Typography>
+            <Button
+              variant="outlined"
+              startIcon={<PersonAddIcon />}
+              onClick={() => setShowInviteModal(true)}
+              sx={{ textTransform: 'none', fontWeight: 600 }}
+            >
+              Invite Member
+            </Button>
+          </Box>
+
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'grey.200', borderRadius: 2 }}>
+            {loadingMembers ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', py: 5 }}>
+                <CircularProgress />
+              </Box>
+            ) : members.length === 0 ? (
+              <Box sx={{ textAlign: 'center', py: 5 }}>
+                <PeopleIcon sx={{ fontSize: 60, color: 'grey.400', mb: 2 }} />
+                <Typography variant="body1" color="text.secondary">
+                  No members yet
+                </Typography>
+              </Box>
+            ) : (
+              <List>
+                {members.map((member, index) => (
+                  <Box key={member.id}>
+                    <ListItem>
+                      <ListItemAvatar>
+                        <Avatar sx={{ bgcolor: stringToColor(member.email) }}>
+                          {member.email?.charAt(0)?.toUpperCase() || 'U'}
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={
+                          <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                            {member.name || member.email}
+                          </Typography>
+                        }
+                        secondary={
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+                            <Typography variant="body2" color="text.secondary">
+                              {member.email}
+                            </Typography>
+                            <Chip label={member.role} size="small" color="primary" variant="outlined" />
+                          </Box>
+                        }
+                      />
+                      <ListItemSecondaryAction>
+                        {member.role !== 'OWNER' && (
+                          <IconButton
+                            edge="end"
+                            onClick={() => handleRemoveMember(member.userId)}
+                            sx={{ color: 'error.main' }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        )}
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                    {index < members.length - 1 && <Divider />}
+                  </Box>
+                ))}
+              </List>
+            )}
+          </Paper>
+        </Box>
+      </Container>
+
+      {/* Create Project Dialog */}
+      <Dialog open={showCreateModal} onClose={() => setShowCreateModal(false)} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ fontWeight: 700, fontSize: '1.5rem' }}>Create Project</DialogTitle>
+        <form onSubmit={handleCreateProject}>
+          <DialogContent>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <TextField
+                label="Project Name"
+                placeholder="My Project"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                fullWidth
+                required
+                autoFocus
+              />
+              <TextField
+                label="Description"
+                placeholder="What is this project about?"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                fullWidth
+                multiline
+                rows={3}
+              />
+            </Box>
+          </DialogContent>
+          <DialogActions sx={{ px: 3, pb: 3 }}>
+            <Button onClick={() => setShowCreateModal(false)} sx={{ textTransform: 'none', fontWeight: 600 }}>
+              Cancel
+            </Button>
+            <Button type="submit" variant="contained" sx={{ textTransform: 'none', fontWeight: 600, px: 3 }}>
+              Create
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+
+      {/* Edit Project Dialog */}
+      <Dialog open={showEditProjectModal} onClose={() => setShowEditProjectModal(false)} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ fontWeight: 700, fontSize: '1.5rem' }}>Edit Project</DialogTitle>
+        <form onSubmit={handleUpdateProject}>
+          <DialogContent>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <TextField
+                label="Project Name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                fullWidth
+                required
+                autoFocus
+              />
+              <TextField
+                label="Description"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                fullWidth
+                multiline
+                rows={3}
+              />
+            </Box>
+          </DialogContent>
+          <DialogActions sx={{ px: 3, pb: 3 }}>
+            <Button onClick={() => setShowEditProjectModal(false)} sx={{ textTransform: 'none', fontWeight: 600 }}>
+              Cancel
+            </Button>
+            <Button type="submit" variant="contained" sx={{ textTransform: 'none', fontWeight: 600, px: 3 }}>
+              Update
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+
+      {/* Invite Member Dialog */}
+      <Dialog open={showInviteModal} onClose={() => setShowInviteModal(false)} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ fontWeight: 700, fontSize: '1.5rem' }}>Invite Member</DialogTitle>
+        <form onSubmit={handleInviteMember}>
+          <DialogContent>
+            <TextField
+              label="Email Address"
+              type="email"
+              placeholder="member@example.com"
+              value={inviteEmail}
+              onChange={(e) => setInviteEmail(e.target.value)}
+              fullWidth
+              required
+              autoFocus
+              error={!!emailError}
+              helperText={emailError}
+            />
+          </DialogContent>
+          <DialogActions sx={{ px: 3, pb: 3 }}>
+            <Button onClick={() => setShowInviteModal(false)} sx={{ textTransform: 'none', fontWeight: 600 }}>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={isInviting}
+              sx={{ textTransform: 'none', fontWeight: 600, px: 3 }}
+            >
+              {isInviting ? <CircularProgress size={24} /> : 'Invite'}
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </Box>
   );
 };
 

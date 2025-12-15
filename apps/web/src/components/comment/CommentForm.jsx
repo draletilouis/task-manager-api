@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import Button from '../common/Button';
 
 const CommentForm = ({ onSubmit, initialData = null, onCancel = null }) => {
   const [content, setContent] = useState(initialData?.content || '');
@@ -29,7 +28,7 @@ const CommentForm = ({ onSubmit, initialData = null, onCancel = null }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
+    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
       <div>
         <textarea
           value={content}
@@ -39,25 +38,24 @@ const CommentForm = ({ onSubmit, initialData = null, onCancel = null }) => {
           }}
           placeholder={initialData ? 'Edit your comment...' : 'Add a comment...'}
           rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          style={{ width: '100%' }}
         />
-        {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
+        {error && <p className="error" style={{ marginTop: '5px' }}>{error}</p>}
       </div>
 
-      <div className="flex gap-2 justify-end">
+      <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
         {onCancel && (
-          <Button
+          <button
             type="button"
             onClick={onCancel}
-            variant="secondary"
             disabled={isSubmitting}
           >
             Cancel
-          </Button>
+          </button>
         )}
-        <Button type="submit" disabled={isSubmitting}>
+        <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? 'Submitting...' : initialData ? 'Update' : 'Comment'}
-        </Button>
+        </button>
       </div>
     </form>
   );

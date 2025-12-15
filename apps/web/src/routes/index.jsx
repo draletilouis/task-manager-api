@@ -3,10 +3,10 @@ import { AuthProvider } from '../context/AuthContext';
 import { ToastProvider } from '../context/ToastContext';
 import PrivateRoute from './PrivateRoute';
 import Navbar from '../components/layout/Navbar';
-import Sidebar from '../components/layout/Sidebar';
 import Toast from '../components/common/Toast';
 import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContextDefinition';
+import { Box } from '@mui/material';
 
 // Page imports
 import Login from '../pages/auth/Login';
@@ -18,7 +18,7 @@ import TaskDetail from '../pages/tasks/TaskDetail';
 import UserProfile from '../pages/profile/UserProfile';
 import SettingsPage from '../pages/settings/SettingsPage';
 
-// Layout for authenticated pages with sidebar
+// Layout for authenticated pages
 const AuthenticatedLayout = () => {
   const { isAuthenticated } = useContext(AuthContext);
 
@@ -27,15 +27,12 @@ const AuthenticatedLayout = () => {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Navbar />
-        <main className="flex-1 overflow-hidden bg-gray-50">
-          <Outlet />
-        </main>
-      </div>
-    </div>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <Navbar />
+      <Box component="main" sx={{ flexGrow: 1, bgcolor: 'grey.50', overflow: 'auto' }}>
+        <Outlet />
+      </Box>
+    </Box>
   );
 };
 

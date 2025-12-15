@@ -7,12 +7,10 @@ class ErrorBoundary extends Component {
   }
 
   static getDerivedStateFromError() {
-    // Update state so the next render will show the fallback UI
     return { hasError: true };
   }
 
   componentDidCatch(error, errorInfo) {
-    // Log error details for debugging
     console.error('Error caught by boundary:', error, errorInfo);
     this.setState({
       error,
@@ -27,43 +25,81 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-          <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6">
-            <div className="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full mb-4">
-              <svg
-                className="w-6 h-6 text-red-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                />
-              </svg>
+        <div style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: '#f5f5f5',
+          padding: '20px'
+        }}>
+          <div style={{
+            maxWidth: '500px',
+            width: '100%',
+            background: '#fff',
+            borderRadius: '8px',
+            padding: '30px',
+            border: '1px solid #ddd'
+          }}>
+            <div style={{
+              width: '48px',
+              height: '48px',
+              margin: '0 auto 20px',
+              background: '#ffebee',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '24px',
+              color: '#d32f2f'
+            }}>
+              !
             </div>
 
-            <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">
+            <h2 style={{
+              fontSize: '24px',
+              fontWeight: 'bold',
+              textAlign: 'center',
+              marginBottom: '10px'
+            }}>
               Something went wrong
             </h2>
-            <p className="text-gray-600 text-center mb-6">
+            <p style={{
+              color: '#666',
+              textAlign: 'center',
+              marginBottom: '20px'
+            }}>
               We encountered an unexpected error. Please try refreshing the page or contact support if the problem persists.
             </p>
 
             {import.meta.env.DEV && this.state.error && (
-              <details className="mb-6 p-4 bg-gray-50 rounded-md border border-gray-200">
-                <summary className="cursor-pointer font-medium text-sm text-gray-700 mb-2">
+              <details style={{
+                marginBottom: '20px',
+                padding: '15px',
+                background: '#f5f5f5',
+                borderRadius: '4px',
+                border: '1px solid #ddd'
+              }}>
+                <summary style={{
+                  cursor: 'pointer',
+                  fontWeight: '500',
+                  fontSize: '14px',
+                  marginBottom: '10px'
+                }}>
                   Error Details (Development Only)
                 </summary>
-                <div className="mt-2 text-xs text-gray-600 font-mono overflow-auto">
-                  <p className="font-semibold mb-1">Error:</p>
-                  <p className="mb-3 text-red-600">{this.state.error.toString()}</p>
+                <div style={{
+                  marginTop: '10px',
+                  fontSize: '12px',
+                  fontFamily: 'monospace',
+                  overflowX: 'auto'
+                }}>
+                  <p style={{ fontWeight: '600', marginBottom: '5px' }}>Error:</p>
+                  <p style={{ marginBottom: '15px', color: '#d32f2f' }}>{this.state.error.toString()}</p>
                   {this.state.errorInfo && (
                     <>
-                      <p className="font-semibold mb-1">Stack Trace:</p>
-                      <pre className="whitespace-pre-wrap">
+                      <p style={{ fontWeight: '600', marginBottom: '5px' }}>Stack Trace:</p>
+                      <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
                         {this.state.errorInfo.componentStack}
                       </pre>
                     </>
@@ -72,16 +108,34 @@ class ErrorBoundary extends Component {
               </details>
             )}
 
-            <div className="flex gap-3">
+            <div style={{ display: 'flex', gap: '10px' }}>
               <button
                 onClick={this.handleReset}
-                className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors font-medium"
+                style={{
+                  flex: 1,
+                  background: '#0066cc',
+                  color: '#fff',
+                  padding: '10px',
+                  borderRadius: '4px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontWeight: '500'
+                }}
               >
                 Try Again
               </button>
               <button
                 onClick={() => window.location.href = '/'}
-                className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors font-medium"
+                style={{
+                  flex: 1,
+                  background: '#f0f0f0',
+                  color: '#333',
+                  padding: '10px',
+                  borderRadius: '4px',
+                  border: '1px solid #ddd',
+                  cursor: 'pointer',
+                  fontWeight: '500'
+                }}
               >
                 Go Home
               </button>

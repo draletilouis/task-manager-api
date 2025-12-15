@@ -12,11 +12,11 @@ const Input = ({
   ...props
 }) => {
   return (
-    <div className="w-full">
+    <div style={{ width: '100%' }}>
       {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '5px' }}>
           {label}
-          {required && <span className="text-red-600 ml-1">*</span>}
+          {required && <span style={{ color: '#d32f2f', marginLeft: '3px' }}>*</span>}
         </label>
       )}
       <input
@@ -27,17 +27,20 @@ const Input = ({
         placeholder={placeholder}
         required={required}
         disabled={disabled}
-        className={`
-          w-full px-3 py-2 border rounded-md
-          focus:outline-none focus:ring-2 focus:ring-blue-500
-          disabled:bg-gray-100 disabled:cursor-not-allowed
-          ${error ? 'border-red-500' : 'border-gray-300'}
-          ${className}
-        `}
+        className={className}
+        style={{
+          width: '100%',
+          padding: '8px',
+          border: error ? '1px solid #d32f2f' : '1px solid #ddd',
+          borderRadius: '4px',
+          fontSize: '14px',
+          opacity: disabled ? 0.6 : 1,
+          cursor: disabled ? 'not-allowed' : 'text'
+        }}
         {...props}
       />
       {error && (
-        <p className="text-red-600 text-sm mt-1">{error}</p>
+        <p className="error" style={{ marginTop: '5px' }}>{error}</p>
       )}
     </div>
   );

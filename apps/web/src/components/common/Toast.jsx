@@ -3,28 +3,63 @@ import { useToast } from '../../context/ToastContext';
 const Toast = () => {
   const { toasts, removeToast } = useToast();
 
-  const typeStyles = {
-    success: 'bg-green-500 text-white',
-    error: 'bg-red-500 text-white',
-    warning: 'bg-yellow-500 text-white',
-    info: 'bg-blue-500 text-white'
+  const getTypeStyle = (type) => {
+    switch (type) {
+      case 'success':
+        return { background: '#388e3c', color: '#fff' };
+      case 'error':
+        return { background: '#d32f2f', color: '#fff' };
+      case 'warning':
+        return { background: '#f57c00', color: '#fff' };
+      case 'info':
+        return { background: '#0066cc', color: '#fff' };
+      default:
+        return { background: '#333', color: '#fff' };
+    }
   };
 
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 space-y-2">
+    <div style={{
+      position: 'fixed',
+      bottom: '20px',
+      right: '20px',
+      zIndex: 9999,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '10px'
+    }}>
       {toasts.map(toast => (
         <div
           key={toast.id}
-          className={`${typeStyles[toast.type]} px-4 py-3 rounded-lg shadow-lg flex items-center justify-between min-w-[300px] max-w-[500px] animate-slide-in`}
+          style={{
+            ...getTypeStyle(toast.type),
+            padding: '12px 16px',
+            borderRadius: '4px',
+            minWidth: '300px',
+            maxWidth: '500px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+          }}
         >
-          <span className="text-sm font-medium">{toast.message}</span>
+          <span style={{ fontSize: '14px', fontWeight: '500' }}>{toast.message}</span>
           <button
             onClick={() => removeToast(toast.id)}
-            className="ml-4 text-white hover:text-gray-200 font-bold"
+            style={{
+              marginLeft: '15px',
+              background: 'transparent',
+              border: 'none',
+              color: '#fff',
+              cursor: 'pointer',
+              fontSize: '18px',
+              lineHeight: 1,
+              fontWeight: 'bold'
+            }}
           >
-            ×
+            &times;
           </button>
         </div>
       ))}
