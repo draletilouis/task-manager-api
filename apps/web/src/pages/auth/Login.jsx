@@ -31,7 +31,7 @@ const Login = () => {
 
   return (
     <AuthLayout
-      title="Log in to Kazi"
+      title="Login to Your Account"
       subtitle="Welcome back! Please enter your details."
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

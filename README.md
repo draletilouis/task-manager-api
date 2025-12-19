@@ -2,11 +2,16 @@
 
 A modern, collaborative task management system built with React and Node.js. Features workspaces, projects, tasks with Kanban boards, and team collaboration. [In development]
 
-**Monorepo Architecture** | **JWT Authentication** | **PostgreSQL Database** | **96.5% Test Coverage** | **Modern UI/UX**
+**Monorepo Architecture** | **JWT Authentication** | **PostgreSQL Database** | **100% Test Coverage** | **Modern UI/UX**
 
 ---
 
 ## Quick Start
+
+**Prerequisites:**
+- Node.js **20.19+** or **22.12+** (required by Vite 7)
+- npm 9.0.0 or higher
+- PostgreSQL database
 
 ```bash
 # Install all dependencies
@@ -39,12 +44,26 @@ You'll need a PostgreSQL database. Choose one of these options:
 - Install PostgreSQL locally
 - Create database: `createdb task_manager`
 
-Then create `apps/api/.env`:
+Then create `apps/api/.env` (see [apps/api/.env.example](apps/api/.env.example)):
 ```env
+# Database
 DATABASE_URL="postgresql://username:password@host:5432/database_name"
+
+# JWT Secrets
 JWT_SECRET="your-super-secret-jwt-key-change-this-in-production"
 JWT_REFRESH_SECRET="your-super-secret-refresh-token-key-change-this-in-production"
+
+# Server
 PORT=5000
+NODE_ENV=development
+
+# Frontend URL (for CORS and email links)
+FRONTEND_URL="http://localhost:5173"
+
+# Email Configuration (Resend)
+RESEND_API_KEY="re_your_api_key_here"
+EMAIL_FROM="Kazi <onboarding@resend.dev>"
+APP_URL="http://localhost:5173"
 ```
 
 ---
@@ -91,6 +110,7 @@ task-manager/
 | **PostgreSQL** | Production database |
 | **JWT** | Authentication tokens |
 | **bcrypt** | Password hashing |
+| **Resend** | Transactional email service |
 | **Jest + Supertest** | Testing |
 
 ### Frontend
@@ -116,6 +136,8 @@ task-manager/
 - User registration with email validation
 - Strong password requirements
 - Password change functionality
+- **Password reset via email** (forgot password flow)
+- Secure reset tokens with 1-hour expiry
 - Protected routes with auto-redirect
 - Persistent authentication via localStorage
 
@@ -238,24 +260,38 @@ npm run format           # Format with Prettier
 - Owner/Admin/Member hierarchical permissions
 - Workspace membership validation
 
+### Input Validation & Sanitization ✅
+- **express-validator** middleware on all endpoints
+- Comprehensive validation rules for all request inputs
+- XSS prevention through input sanitization
+- Field-level validation with detailed error messages
+- Email normalization and format validation
+- String length limits to prevent buffer overflow
+- Type checking and enum validation
+- Custom validation rules for complex business logic
+
 ### Best Practices
 - SQL injection prevention (Prisma ORM)
-- Input validation and sanitization
-- Email format validation
+- Automated input validation and sanitization
+- Email format validation and normalization
 - CORS ready for production
 
 ---
 
 ## Testing
 
-**Overall Coverage**: 56/58 tests passing (96.5%)
+**Overall Coverage**: **144/144 tests passing (100%)** ✅
 
 | Module | Tests | Status |
 |--------|-------|--------|
-| Task Service | 14/16 | 88% |
-| Task Routes | 15/15 | 100% |
-| Comment Service | 12/12 | 100% |
-| Comment Routes | 15/15 | 100% |
+| **Auth Service** | 23/23 | ✅ 100% |
+| **Auth Routes** | 16/16 | ✅ 100% |
+| **Workspace Service** | 27/27 | ✅ 100% |
+| **Project Service** | 20/20 | ✅ 100% |
+| **Task Service** | 16/16 | ✅ 100% |
+| **Task Routes** | 15/15 | ✅ 100% |
+| **Comment Service** | 12/12 | ✅ 100% |
+| **Comment Routes** | 15/15 | ✅ 100% |
 
 ```bash
 npm run test:api                    # Run all tests
@@ -273,6 +309,8 @@ POST   /auth/register          # Register new user
 POST   /auth/login             # Login user
 POST   /auth/refresh           # Refresh access token
 POST   /auth/change-password   # Change password (protected)
+POST   /auth/forgot-password   # Request password reset email
+POST   /auth/reset-password    # Reset password with token
 ```
 
 ### Workspaces
@@ -316,6 +354,22 @@ DELETE /workspaces/comments/:commentId       # Delete comment (owner/ADMIN/OWNER
 
 ## Pending Tasks & Roadmap
 
+### IMPORTANT: Node.js Version Requirement
+
+This project requires **Node.js 20.19+ or 22.12+** due to Vite 7 requirements. If you're using Node.js 20.18.0 or lower, you'll see warnings during build. To upgrade:
+
+**Using nvm (recommended):**
+```bash
+nvm install 20.19
+nvm use 20.19
+```
+
+**Or download directly:**
+- [Node.js 20.x LTS](https://nodejs.org/)
+- [Node.js 22.x Current](https://nodejs.org/)
+
+---
+
 ### HIGH PRIORITY
 
 #### Infrastructure & DevOps
@@ -328,16 +382,16 @@ DELETE /workspaces/comments/:commentId       # Delete comment (owner/ADMIN/OWNER
 
 #### Security Enhancements
 - [ ] Implement rate limiting (express-rate-limit)
-- [ ] Add request validation middleware (express-validator)
+- [x] ~~Add request validation middleware~~ ✅ (express-validator implemented on all routes)
 - [x] ~~Configure CORS~~ (Currently allows all origins - needs production config)
 - [ ] Add helmet.js for security headers
 - [ ] Implement request logging (Winston/Pino)
 - [ ] Add error tracking (Sentry)
 
 #### Testing
-- [ ] Add tests for Auth module (0% coverage)
-- [ ] Add tests for Workspace module (0% coverage)
-- [ ] Add tests for Project module (0% coverage)
+- [x] ~~Add tests for Auth module~~ ✅ (23 tests, 100% coverage)
+- [x] ~~Add tests for Workspace module~~ ✅ (27 tests, 100% coverage)
+- [x] ~~Add tests for Project module~~ ✅ (20 tests, 100% coverage)
 - [ ] Set up frontend testing (Vitest + Testing Library)
 - [ ] Add E2E tests (Playwright/Cypress)
 - [ ] Set up test coverage thresholds in CI
@@ -355,7 +409,7 @@ DELETE /workspaces/comments/:commentId       # Delete comment (owner/ADMIN/OWNER
 - [ ] Rich text editor for task descriptions (TipTap/Quill)
 - [ ] Task tags/labels system
 - [ ] Bulk task operations
-- [ ] Email notifications
+- [x] ~~Email notifications~~ ✅ (Resend integration for password reset & welcome emails)
 - [ ] Export functionality (PDF, CSV)
 
 #### Code Quality
@@ -402,6 +456,85 @@ DELETE /workspaces/comments/:commentId       # Delete comment (owner/ADMIN/OWNER
 ---
 
 ## Recent Updates
+
+### December 2025 - Email Service Integration (Resend)
+- **Transactional Email System**
+  - Integrated Resend for reliable email delivery
+  - Professional HTML email templates with responsive design
+  - Welcome emails sent on user registration
+  - Password reset emails with secure token links
+  - Workspace invitation emails (ready for implementation)
+- **Email Service Architecture**
+  - Centralized email service (`email.service.js`)
+  - Non-blocking email sending (async/await with error handling)
+  - Graceful degradation when email is not configured
+  - Environment variable configuration for easy deployment
+- **Email Templates**
+  - Branded Kazi templates with consistent styling
+  - Mobile-responsive HTML design
+  - CTA buttons with clear actions
+  - Footer with copyright and branding
+- **Security & Best Practices**
+  - No email enumeration (doesn't reveal if email exists)
+  - Environment-based configuration
+  - Proper error logging without exposing sensitive info
+  - Removed development console.log of reset tokens
+
+### December 2025 - Password Reset Feature
+- **Complete Forgot Password Flow**
+  - Backend password reset service with secure JWT tokens
+  - Reset tokens expire after 1 hour
+  - Frontend forgot password page with email input
+  - Frontend reset password page with new password form
+  - Email enumeration protection (doesn't reveal if email exists)
+  - Token invalidation on password change
+  - Comprehensive validation for all password reset endpoints
+- **Database Schema Updates**
+  - Added `resetToken` field to User model (unique)
+  - Added `resetTokenExpiry` field for expiration tracking
+- **API Endpoints**
+  - `POST /auth/forgot-password` - Request password reset
+  - `POST /auth/reset-password` - Reset password with token
+- **Security Features**
+  - Tokens include user password hash (auto-invalidate on password change)
+  - 1-hour token expiration
+  - Prevents email enumeration attacks
+  - Strong password validation on reset
+
+### December 2025 - Input Validation & Security Hardening
+- **Comprehensive Input Validation**
+  - Implemented **express-validator** across all API endpoints
+  - Created validation rules for Auth, Workspace, Project, Task, and Comment modules
+  - Added field-level validation with detailed error responses
+  - Email normalization and sanitization
+  - String length limits and type checking
+  - XSS prevention through input sanitization
+  - Custom validation rules for complex business logic
+- **Security Improvements**
+  - Protection against injection attacks
+  - Input sanitization on all user-provided data
+  - Structured error responses with validation details
+  - Enhanced password strength requirements
+
+### December 2025 - Complete Test Coverage Achievement
+- **Comprehensive Testing Suite**
+  - Added 86 new tests across Auth, Workspace, and Project modules
+  - Achieved **100% test coverage** (144/144 tests passing)
+  - Fixed broken test suite (Jest + graceful-fs dependency issue)
+  - All modules now have complete unit and integration tests
+- **Test Breakdown:**
+  - Auth Service: 23 tests (register, login, JWT refresh, password change)
+  - Auth Routes: 16 tests (full API endpoint coverage)
+  - Workspace Service: 27 tests (CRUD, members, roles)
+  - Project Service: 20 tests (CRUD operations)
+  - Task Service: 16 tests (existing, now all passing)
+  - Task Routes: 15 tests (existing)
+  - Comment Service: 12 tests (existing)
+  - Comment Routes: 15 tests (existing)
+- **Node.js Version Requirements**
+  - Updated documentation for Node.js 20.19+ or 22.12+ requirement
+  - Added migration guide for upgrading Node.js
+  - Updated package.json engine requirements
 
 ### December 2025 - Branding & Database Migration
 - **Rebranded to Kazi**

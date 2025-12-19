@@ -32,11 +32,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const response = await apiClient.post('/auth/login', { email, password });
-    const { accessToken, refreshToken } = response.data;
-
-    // Decode token to get userId
-    const decoded = decodeToken(accessToken);
-    const userData = { id: decoded.userId, email };
+    const { accessToken, refreshToken, user: userData } = response.data;
 
     // Store tokens and user data
     localStorage.setItem('accessToken', accessToken);

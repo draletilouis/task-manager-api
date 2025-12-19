@@ -5,7 +5,7 @@ import prisma from "../../database/prisma.js";
  * User becomes the owner automatically
  */
 export async function createWorkspace(userId, data) {
-    const {name} = data;
+    const {name, description} = data;
 
     // Validate workspace name
     if (!name||name.trim().length === 0) {
@@ -16,6 +16,7 @@ export async function createWorkspace(userId, data) {
     const workspace = await prisma.workspace.create({
         data: {
             name: name.trim(),
+            description: description?.trim() || null,
             ownerId: userId,
             members: {
                 create: { userId: userId,
@@ -29,6 +30,7 @@ export async function createWorkspace(userId, data) {
         workspace:{
             id: workspace.id,
             name: workspace.name,
+            description: workspace.description,
             ownerId: workspace.ownerId,
             createdAt: workspace.createdAt,
         }
@@ -50,6 +52,7 @@ export async function getWorkspaces(userId) {
     const workspaces = memberships.map((membership) => ({
         id: membership.workspace.id,
         name: membership.workspace.name,
+        description: membership.workspace.description,
         role: membership.role,
         createdAt: membership.workspace.createdAt,
     }));
@@ -58,11 +61,11 @@ export async function getWorkspaces(userId) {
 }
 
 /**
- * Update workspace name
+ * Update workspace name and description
  * Only admins and owners can update
  */
 export async function updateWorkspace(workspaceId, userId, data) {
-    const { name } = data;
+    const { name, description } = data;
 
     // Validate workspace name
     if (!name || name.trim().length === 0) {
@@ -85,7 +88,10 @@ export async function updateWorkspace(workspaceId, userId, data) {
     // Update workspace
     const workspace = await prisma.workspace.update({
         where: { id: workspaceId },
-        data: { name: name.trim() },
+        data: {
+            name: name.trim(),
+            description: description?.trim() || null
+        },
     });
 
     return {
@@ -93,6 +99,7 @@ export async function updateWorkspace(workspaceId, userId, data) {
         workspace: {
             id: workspace.id,
             name: workspace.name,
+            description: workspace.description,
             ownerId: workspace.ownerId,
             createdAt: workspace.createdAt,
         }

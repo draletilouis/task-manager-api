@@ -1,31 +1,42 @@
 import { Router } from "express";
 import * as WorkspaceController from "./workspace.controller.js";
 import { authMiddleware } from "../auth/auth.middleware.js";
+import { validate } from "../../shared/middleware/validation.middleware.js";
+import {
+    createWorkspaceValidation,
+    updateWorkspaceValidation,
+    workspaceIdValidation,
+    inviteMemberValidation,
+    removeMemberValidation,
+    updateMemberRoleValidation
+} from "./workspace.validation.js";
 
 const router = Router();
 
 // All workspace routes require authentication
 
 // Route to create a new workspace
-router.post("/", authMiddleware, WorkspaceController.createWorkspace);
+router.post("/", authMiddleware, createWorkspaceValidation, validate, WorkspaceController.createWorkspace);
 
 // Route to get all workspaces for the authenticated user
 router.get("/", authMiddleware, WorkspaceController.getWorkspaces);
 
 // Route to update workspace name
-router.put("/:workspaceId", authMiddleware, WorkspaceController.updateWorkspace);
+router.put("/:workspaceId", authMiddleware, updateWorkspaceValidation, validate, WorkspaceController.updateWorkspace);
 
 // Route to delete workspace
-router.delete("/:workspaceId", authMiddleware, WorkspaceController.deleteWorkspace);
+router.delete("/:workspaceId", authMiddleware, workspaceIdValidation, validate, WorkspaceController.deleteWorkspace);
 
 // Route to get workspace members
-router.get("/:workspaceId/members", authMiddleware, WorkspaceController.getWorkspaceMembers);
+router.get("/:workspaceId/members", authMiddleware, workspaceIdValidation, validate, WorkspaceController.getWorkspaceMembers);
 
 // Route to invite member to workspace
-router.post("/:workspaceId/members", authMiddleware, WorkspaceController.inviteMember);
+router.post("/:workspaceId/members", authMiddleware, inviteMemberValidation, validate, WorkspaceController.inviteMember);
 
-router.delete("/:workspaceId/members/:memberId", authMiddleware, WorkspaceController.removeMember);
+// Route to remove member from workspace
+router.delete("/:workspaceId/members/:memberId", authMiddleware, removeMemberValidation, validate, WorkspaceController.removeMember);
 
-router.put("/:workspaceId/members/:memberId/role", authMiddleware, WorkspaceController.updateMemberRole);
+// Route to update member role
+router.put("/:workspaceId/members/:memberId/role", authMiddleware, updateMemberRoleValidation, validate, WorkspaceController.updateMemberRole);
 
 export default router;

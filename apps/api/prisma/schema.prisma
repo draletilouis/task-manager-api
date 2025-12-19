@@ -12,6 +12,8 @@ model User {
     email String @unique
     password String
     name String?
+    resetToken String? @unique
+    resetTokenExpiry DateTime?
     workspaces WorkspaceMember[]
     activityLogs ActivityLog[]
     assignedTasks Task[] @relation("TaskAssignee")
@@ -21,6 +23,7 @@ model User {
 model Workspace {
     id        String   @id @default(uuid())
   name      String
+  description String?
   ownerId   String
   members   WorkspaceMember[]
   projects  Project[]

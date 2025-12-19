@@ -49,3 +49,28 @@ export async function changePassword(req, res) {
         res.status(400).json({ error: error.message });
     }
 }
+
+/**
+ * Handle password reset request
+ */
+export async function requestPasswordReset(req, res) {
+    try {
+        const result = await AuthService.requestPasswordReset(req.body.email);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}
+
+/**
+ * Handle password reset
+ */
+export async function resetPassword(req, res) {
+    try {
+        const { token, newPassword } = req.body;
+        const result = await AuthService.resetPassword(token, newPassword);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}

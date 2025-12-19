@@ -27,13 +27,13 @@ const { createTask, getTasks, updateTask, deleteTask } = await import('../src/mo
 
 describe('Task Service', () => {
     beforeEach(() => {
-        mockPrisma.workspaceMember.findFirst.mockClear();
-        mockPrisma.project.findFirst.mockClear();
-        mockPrisma.task.create.mockClear();
-        mockPrisma.task.findMany.mockClear();
-        mockPrisma.task.findFirst.mockClear();
-        mockPrisma.task.update.mockClear();
-        mockPrisma.task.delete.mockClear();
+        mockPrisma.workspaceMember.findFirst.mockReset();
+        mockPrisma.project.findFirst.mockReset();
+        mockPrisma.task.create.mockReset();
+        mockPrisma.task.findMany.mockReset();
+        mockPrisma.task.findFirst.mockReset();
+        mockPrisma.task.update.mockReset();
+        mockPrisma.task.delete.mockReset();
     });
 
     describe('createTask', () => {

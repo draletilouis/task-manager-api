@@ -3,7 +3,6 @@ import { AuthProvider } from '../context/AuthContext';
 import { ToastProvider } from '../context/ToastContext';
 import PrivateRoute from './PrivateRoute';
 import Navbar from '../components/layout/Navbar';
-import Sidebar from '../components/layout/Sidebar';
 import Toast from '../components/common/Toast';
 import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContextDefinition';
@@ -11,6 +10,8 @@ import { AuthContext } from '../context/AuthContextDefinition';
 // Page imports
 import Login from '../pages/auth/Login';
 import Register from '../pages/auth/Register';
+import ForgotPassword from '../pages/auth/ForgotPassword';
+import ResetPassword from '../pages/auth/ResetPassword';
 import WorkspacesPage from '../pages/workspaces/WorkspacesPage';
 import WorkspaceDetail from '../pages/workspaces/WorkspaceDetail';
 import ProjectDetail from '../pages/projects/ProjectDetail';
@@ -18,7 +19,7 @@ import TaskDetail from '../pages/tasks/TaskDetail';
 import UserProfile from '../pages/profile/UserProfile';
 import SettingsPage from '../pages/settings/SettingsPage';
 
-// Layout for authenticated pages with sidebar
+// Layout for authenticated pages
 const AuthenticatedLayout = () => {
   const { isAuthenticated } = useContext(AuthContext);
 
@@ -27,14 +28,11 @@ const AuthenticatedLayout = () => {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Navbar />
-        <main className="flex-1 overflow-hidden bg-gray-50">
-          <Outlet />
-        </main>
-      </div>
+    <div className="flex flex-col h-screen overflow-hidden">
+      <Navbar />
+      <main className="flex-1 overflow-auto bg-gray-50">
+        <Outlet />
+      </main>
     </div>
   );
 };
@@ -64,7 +62,15 @@ export const router = createBrowserRouter([
         path: '/register',
         element: <Register />
       },
-      
+      {
+        path: '/forgot-password',
+        element: <ForgotPassword />
+      },
+      {
+        path: '/reset-password/:token',
+        element: <ResetPassword />
+      },
+
       // Redirect root to login
       {
         path: '/',
