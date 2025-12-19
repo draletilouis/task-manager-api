@@ -55,6 +55,20 @@ export async function deleteWorkspace(req, res) {
 }
 
 /**
+ * Handle getting workspace members
+ */
+export async function getWorkspaceMembers(req, res) {
+    try {
+        const userId = req.user.userId;
+        const workspaceId = req.params.workspaceId;
+        const result = await workspaceService.getWorkspaceMembers(workspaceId, userId);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}
+
+/**
  * Handle member invitation
  */
 export async function inviteMember(req, res) {

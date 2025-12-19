@@ -6,7 +6,7 @@ export const getTasks = async (workspaceId, projectId) => {
     const response = await apiClient.get(
       `/workspaces/${workspaceId}/projects/${projectId}/tasks`
     );
-    return response.data;
+    return response.data.tasks || [];
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to fetch tasks");
   }
@@ -31,7 +31,7 @@ export const createTask = async (workspaceId, projectId, taskData) => {
       `/workspaces/${workspaceId}/projects/${projectId}/tasks`,
       taskData
     );
-    return response.data;
+    return response.data.task;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to create task");
   }
@@ -44,7 +44,7 @@ export const updateTask = async (workspaceId, projectId, taskId, taskData) => {
       `/workspaces/${workspaceId}/projects/${projectId}/tasks/${taskId}`,
       taskData
     );
-    return response.data;
+    return response.data.task;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to update task");
   }

@@ -7,11 +7,9 @@ import commentRoutes from "./modules/comments/comment.routes.js";
 
 const app = express();
 
-// Enable CORS manually
+// Enable CORS for all origins
 app.use((req, res, next) => {
-  const origin = process.env.CLIENT_URL || 'http://localhost:5173';
-  res.header('Access-Control-Allow-Origin', origin);
-  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
 

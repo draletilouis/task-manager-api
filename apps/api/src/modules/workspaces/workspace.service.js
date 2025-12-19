@@ -130,6 +130,40 @@ export async function deleteWorkspace(workspaceId, userId) {
 }
 
 /**
+ * Get all members of a workspace
+ */
+export async function getWorkspaceMembers(workspaceId, userId) {
+    // Check if user is a member of the workspace
+    const membership = await prisma.workspaceMember.findFirst({
+        where: {
+            workspaceId: workspaceId,
+            userId: userId
+        }
+    });
+
+    if (!membership) {
+        throw new Error("You do not have permission to view members of this workspace");
+    }
+
+    // Get all members of the workspace
+    const members = await prisma.workspaceMember.findMany({
+        where: {
+            workspaceId: workspaceId
+        },
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    email: true
+                }
+            }
+        }
+    });
+
+    return members;
+}
+
+/**
  * Invite a member to workspace
  * Only admins and owners can invite
  */

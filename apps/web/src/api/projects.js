@@ -4,7 +4,7 @@ import apiClient from "./client";
 export const getProjects = async (workspaceId) => {
   try {
     const response = await apiClient.get(`/workspaces/${workspaceId}/projects`);
-    return response.data;
+    return response.data.projects || [];
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to fetch projects");
   }
@@ -17,7 +17,7 @@ export const createProject = async (workspaceId, projectData) => {
       `/workspaces/${workspaceId}/projects`,
       projectData
     );
-    return response.data;
+    return response.data.project;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to create project");
   }
@@ -30,7 +30,7 @@ export const updateProject = async (workspaceId, projectId, projectData) => {
       `/workspaces/${workspaceId}/projects/${projectId}`,
       projectData
     );
-    return response.data;
+    return response.data.project;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to update project");
   }

@@ -10,7 +10,7 @@ const TaskForm = ({ onSubmit, onCancel, initialData = null, workspaceId }) => {
     status: initialData?.status || 'TODO',
     priority: initialData?.priority || 'MEDIUM',
     dueDate: initialData?.dueDate ? new Date(initialData.dueDate).toISOString().split('T')[0] : '',
-    assigneeId: initialData?.assignee?.id || '',
+    assigneeId: initialData?.assignedTo || '',
   });
 
   const [members, setMembers] = useState([]);
@@ -69,15 +69,20 @@ const TaskForm = ({ onSubmit, onCancel, initialData = null, workspaceId }) => {
 
     try {
       const taskData = {
-        ...formData,
+        title: formData.title,
+        description: formData.description,
+        status: formData.status,
+        priority: formData.priority,
         dueDate: formData.dueDate ? new Date(formData.dueDate).toISOString() : null,
+        assignedTo: formData.assigneeId || null,
       };
       await onSubmit(taskData);
+      // Success - don't reset isSubmitting, let parent component handle it
     } catch (error) {
       console.error('Task form error:', error);
       setErrors({ submit: error.message });
-    } finally {
       setIsSubmitting(false);
+      throw error; // Re-throw so parent knows about the error
     }
   };
 

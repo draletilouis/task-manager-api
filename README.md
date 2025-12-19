@@ -1,8 +1,8 @@
-# Task Manager - Full Stack Application
+# Kazi - Full Stack Task Management Application
 
-A modern, collaborative task management system built with React and Node.js. Features workspaces, projects, tasks with Kanban boards, and real-time collaboration. [In development]
+A modern, collaborative task management system built with React and Node.js. Features workspaces, projects, tasks with Kanban boards, and team collaboration. [In development]
 
-**Monorepo Architecture** | **JWT Authentication** | **96.5% Test Coverage** | **Modern UI/UX**
+**Monorepo Architecture** | **JWT Authentication** | **PostgreSQL Database** | **96.5% Test Coverage** | **Modern UI/UX**
 
 ---
 
@@ -12,9 +12,8 @@ A modern, collaborative task management system built with React and Node.js. Fea
 # Install all dependencies
 npm install
 
-# Set up environment files
-cd apps/api && cp .env.example .env
-cd ../web && cp .env.example .env
+# Set up environment files (see Database Setup section below)
+# Create apps/api/.env with your DATABASE_URL
 
 # Initialize database
 npm run db:generate
@@ -26,6 +25,27 @@ npm run dev
 
 **API**: http://localhost:5000
 **Web**: http://localhost:5173
+
+### Database Setup
+
+You'll need a PostgreSQL database. Choose one of these options:
+
+**Option 1: Cloud PostgreSQL (Recommended)**
+- **Supabase** (Free tier: 500MB): [supabase.com](https://supabase.com)
+- **Neon** (Free tier: 0.5GB): [neon.tech](https://neon.tech)
+- **Railway** ($5/month credit): [railway.app](https://railway.app)
+
+**Option 2: Local PostgreSQL**
+- Install PostgreSQL locally
+- Create database: `createdb task_manager`
+
+Then create `apps/api/.env`:
+```env
+DATABASE_URL="postgresql://username:password@host:5432/database_name"
+JWT_SECRET="your-super-secret-jwt-key-change-this-in-production"
+JWT_REFRESH_SECRET="your-super-secret-refresh-token-key-change-this-in-production"
+PORT=5000
+```
 
 ---
 
@@ -68,7 +88,7 @@ task-manager/
 | **Node.js** | Runtime (ES modules) |
 | **Express 5** | REST API framework |
 | **Prisma ORM** | Type-safe database toolkit |
-| **SQLite** | Development database |
+| **PostgreSQL** | Production database |
 | **JWT** | Authentication tokens |
 | **bcrypt** | Password hashing |
 | **Jest + Supertest** | Testing |
@@ -130,6 +150,12 @@ task-manager/
 - Role-based deletion (ADMIN/OWNER override)
 
 ### UI/UX
+- **Authentication Pages**
+  - 50/50 split design with branding side and form side
+  - Gradient blue branding panel with Kazi logo
+  - Single-screen layout with no scrolling required
+  - Responsive design (mobile-friendly)
+  - Smooth color transitions and professional styling
 - **Modern Desktop Layout**
   - Collapsible sidebar navigation (w-72 expanded, w-16 collapsed)
   - Dark themed sidebar with workspace/project tree
@@ -253,6 +279,7 @@ POST   /auth/change-password   # Change password (protected)
 ```http
 POST   /workspaces                              # Create workspace
 GET    /workspaces                              # List user workspaces
+GET    /workspaces/:workspaceId/members         # Get workspace members
 PUT    /workspaces/:workspaceId                 # Update workspace (OWNER/ADMIN)
 DELETE /workspaces/:workspaceId                 # Delete workspace (OWNER)
 POST   /workspaces/:workspaceId/members         # Invite member (OWNER/ADMIN)
@@ -272,6 +299,7 @@ DELETE /workspaces/:workspaceId/projects/:projectId   # Delete project (OWNER/AD
 ```http
 POST   /workspaces/:workspaceId/projects/:projectId/tasks          # Create task
 GET    /workspaces/:workspaceId/projects/:projectId/tasks          # List tasks
+GET    /workspaces/:workspaceId/projects/:projectId/tasks/:taskId  # Get single task
 PUT    /workspaces/:workspaceId/projects/:projectId/tasks/:taskId  # Update task
 DELETE /workspaces/:workspaceId/projects/:projectId/tasks/:taskId  # Delete task
 ```
@@ -291,16 +319,17 @@ DELETE /workspaces/comments/:commentId       # Delete comment (owner/ADMIN/OWNER
 ### HIGH PRIORITY
 
 #### Infrastructure & DevOps
-- [ ] Create `.env.example` files for both apps
+- [x] ~~Create `.env.example` files~~ (Database setup documented in README)
 - [ ] Add Docker support (Dockerfile + docker-compose.yml)
 - [ ] Set up CI/CD pipeline (GitHub Actions)
 - [ ] Add health check endpoint (`GET /health`)
 - [ ] Configure environment-specific builds
+- [ ] Document cloud database options (Supabase, Neon, Railway)
 
 #### Security Enhancements
 - [ ] Implement rate limiting (express-rate-limit)
 - [ ] Add request validation middleware (express-validator)
-- [ ] Configure CORS properly
+- [x] ~~Configure CORS~~ (Currently allows all origins - needs production config)
 - [ ] Add helmet.js for security headers
 - [ ] Implement request logging (Winston/Pino)
 - [ ] Add error tracking (Sentry)
@@ -321,6 +350,7 @@ DELETE /workspaces/comments/:commentId       # Delete comment (owner/ADMIN/OWNER
   - Activity feed per workspace
   - User activity history
   - Audit trail for compliance
+- [ ] Task assignee relation improvements (already in schema)
 - [ ] File attachments for tasks
 - [ ] Rich text editor for task descriptions (TipTap/Quill)
 - [ ] Task tags/labels system
@@ -372,6 +402,32 @@ DELETE /workspaces/comments/:commentId       # Delete comment (owner/ADMIN/OWNER
 ---
 
 ## Recent Updates
+
+### December 2025 - Branding & Database Migration
+- **Rebranded to Kazi**
+  - Updated application name from "Task Manager" to "Kazi"
+  - New Kazi logo (kazi_logo.svg) throughout the application
+  - Updated AuthLayout with Kazi branding
+- **Authentication UI Overhaul**
+  - Implemented 50/50 split design on login and register pages
+  - Gradient blue branding panel (from-blue-600 via-blue-700 to-blue-900)
+  - Single-screen layout with no scrolling
+  - Improved color blending and transitions
+- **Database Migration to PostgreSQL**
+  - Migrated from SQLite to PostgreSQL
+  - Updated Prisma schema with proper relations
+  - Added Task.assignee relation for better data modeling
+  - Added User.name field for future enhancements
+- **API Enhancements**
+  - Added GET endpoint for workspace members
+  - Added GET endpoint for single task by ID
+  - Fixed task assignment field mapping (assignedTo)
+  - CORS configured to allow requests from anywhere
+- **Bug Fixes**
+  - Fixed task creation modal not closing on success
+  - Fixed task form freezing on "Saving..." state
+  - Fixed blank form when viewing tasks
+  - Resolved backend server crashes during development
 
 ### December 2025 - Desktop UI Enhancements
 - **Sidebar Navigation**

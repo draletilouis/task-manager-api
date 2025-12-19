@@ -9,6 +9,8 @@ const router = Router();
 router.post("/:workspaceId/projects/:projectId/tasks", authMiddleware, TaskController.createTask);
 // Route to get all tasks in a project
 router.get("/:workspaceId/projects/:projectId/tasks", authMiddleware, TaskController.getTasks);
+// Route to get a single task by ID
+router.get("/:workspaceId/projects/:projectId/tasks/:taskId", authMiddleware, TaskController.getTask);
 // Route to update a task
 router.put("/:workspaceId/projects/:projectId/tasks/:taskId", authMiddleware, TaskController.updateTask);
 // Route to delete a task

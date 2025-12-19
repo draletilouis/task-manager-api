@@ -18,6 +18,9 @@ router.put("/:workspaceId", authMiddleware, WorkspaceController.updateWorkspace)
 // Route to delete workspace
 router.delete("/:workspaceId", authMiddleware, WorkspaceController.deleteWorkspace);
 
+// Route to get workspace members
+router.get("/:workspaceId/members", authMiddleware, WorkspaceController.getWorkspaceMembers);
+
 // Route to invite member to workspace
 router.post("/:workspaceId/members", authMiddleware, WorkspaceController.inviteMember);
 

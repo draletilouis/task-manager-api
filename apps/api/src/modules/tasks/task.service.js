@@ -115,6 +115,55 @@ export async function getTasks(workspaceId, projectId, userId) {
     return { tasks };
 }
 
+export async function getTask(workspaceId, projectId, taskId, userId) {
+    // Check user is a workspace member
+    const membership = await prisma.workspaceMember.findFirst({
+        where: {
+            workspaceId: workspaceId,
+            userId: userId,
+        }
+    });
+
+    if (!membership) {
+        throw new Error("You do not have permission to view tasks in this workspace");
+    }
+
+    // Check project exists in workspace
+    const project = await prisma.project.findFirst({
+        where: {
+            id: projectId,
+            workspaceId: workspaceId
+        }
+    });
+
+    if (!project) {
+        throw new Error("Project not found in this workspace");
+    }
+
+    // Get task with assignee information
+    const task = await prisma.task.findFirst({
+        where: {
+            id: taskId,
+            projectId: projectId
+        },
+        include: {
+            assignee: {
+                select: {
+                    id: true,
+                    email: true,
+                    name: true
+                }
+            }
+        }
+    });
+
+    if (!task) {
+        throw new Error("Task not found in this project");
+    }
+
+    return task;
+}
+
 export async function updateTask(workspaceId, projectId, taskId, userId, data) {
     // 1. Extract data from request body
     const { title, description, status, priority, dueDate, assignedTo } = data;

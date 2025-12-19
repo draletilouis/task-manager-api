@@ -36,9 +36,9 @@ const Register = () => {
   return (
     <AuthLayout
       title="Create your account"
-      subtitle="Join Task Manager to get organized today."
+      subtitle="Join Kazi to get organized today."
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Name Field */}
         <div>
           <label
@@ -58,9 +58,9 @@ const Register = () => {
                 message: 'Name must be at least 2 characters'
               }
             })}
-            className={`w-full px-4 py-3 border ${
+            className={`w-full px-4 py-2.5 border ${
               errors.name ? 'border-red-500' : 'border-gray-300'
-            } rounded-md text-base text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
+            } rounded-md text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
             placeholder="Enter your full name"
           />
           {errors.name && (
@@ -87,9 +87,9 @@ const Register = () => {
                 message: 'Enter a valid email'
               }
             })}
-            className={`w-full px-4 py-3 border ${
+            className={`w-full px-4 py-2.5 border ${
               errors.email ? 'border-red-500' : 'border-gray-300'
-            } rounded-md text-base text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
+            } rounded-md text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
             placeholder="Enter your email"
           />
           {errors.email && (
@@ -121,9 +121,9 @@ const Register = () => {
                   message: 'Must contain uppercase, lowercase, and number'
                 }
               })}
-              className={`w-full px-4 py-3 pr-12 border ${
+              className={`w-full px-4 py-2.5 pr-12 border ${
                 errors.password ? 'border-red-500' : 'border-gray-300'
-              } rounded-md text-base text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
+              } rounded-md text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
               placeholder="Create a password"
             />
             <button
@@ -162,9 +162,9 @@ const Register = () => {
                 validate: value =>
                   value === password || 'Passwords do not match'
               })}
-              className={`w-full px-4 py-3 pr-12 border ${
+              className={`w-full px-4 py-2.5 pr-12 border ${
                 errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
-              } rounded-md text-base text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
+              } rounded-md text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
               placeholder="Confirm your password"
             />
             <button
@@ -196,14 +196,14 @@ const Register = () => {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-gray-900 hover:bg-black text-white font-bold py-3 px-4 rounded-full text-base transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-gray-900 hover:bg-black text-white font-semibold py-2.5 px-4 rounded-full text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? 'Creating account...' : 'Create account'}
         </button>
 
         {/* Sign In Link */}
-        <div className="pt-6">
-          <p className="text-base text-gray-700">
+        <div className="pt-4">
+          <p className="text-sm text-gray-700">
             Already have an account?{' '}
             <Link
               to="/login"

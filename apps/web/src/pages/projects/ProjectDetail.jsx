@@ -158,6 +158,7 @@ const ProjectDetail = () => {
         title="Create New Task"
       >
         <TaskForm
+          key={isModalOpen ? 'open' : 'closed'}
           onSubmit={handleCreateTask}
           onCancel={() => setIsModalOpen(false)}
           workspaceId={workspaceId}
