@@ -20,6 +20,8 @@
     "build": "npm run build --workspaces --if-present",
     "build:api": "npm run build --workspace=apps/api",
     "build:web": "npm run build --workspace=apps/web",
+    "start:api": "npm run db:migrate:deploy --workspace=apps/api && npm run start --workspace=apps/api",
+    "start:web": "npm run preview --workspace=apps/web",
     "test": "npm run test --workspaces --if-present",
     "test:api": "npm run test --workspace=apps/api",
     "test:web": "npm run test --workspace=apps/web",
