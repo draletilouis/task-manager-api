@@ -26,6 +26,40 @@ A modern, collaborative task management system built with React and Node.js. Fea
 
 ---
 
+## Screenshots
+
+### Authentication
+<div align="center">
+  <img src="screenshots/landing_page.png" alt="Login Page" width="800"/>
+  <p><em>Modern login page with 50/50 split design and Kazi branding</em></p>
+</div>
+
+### Dashboard & Workspaces
+<div align="center">
+  <img src="screenshots/workspaces.png" alt="Workspaces Dashboard" width="800"/>
+  <p><em>Workspaces overview with collapsible sidebar navigation</em></p>
+</div>
+
+### Kanban Board
+<div align="center">
+  <img src="screenshots/kanban.png" alt="Kanban Board" width="800"/>
+  <p><em>Drag-and-drop task board with TODO, IN_PROGRESS, and DONE columns</em></p>
+</div>
+
+### Project Organization
+<div align="center">
+  <img src="screenshots/projects.png" alt="Project View" width="800"/>
+  <p><em>Project management within workspaces with breadcrumb navigation</em></p>
+</div>
+
+### Empty States
+<div align="center">
+  <img src="screenshots/empty_workspace.png" alt="Empty Workspace" width="800"/>
+  <p><em>Clean empty state design with call-to-action for creating projects</em></p>
+</div>
+
+---
+
 ## Quick Start
 
 **Prerequisites:**

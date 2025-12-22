@@ -116,23 +116,6 @@ const TaskFilterBar = ({ workspaceId, onFilterChange }) => {
           </select>
         </div>
 
-        {/* Sort By */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Sort By
-          </label>
-          <select
-            value={filters.sortBy || 'createdAt'}
-            onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="createdAt">Created Date</option>
-            <option value="dueDate">Due Date</option>
-            <option value="priority">Priority</option>
-            <option value="title">Title</option>
-          </select>
-        </div>
-
         {/* Clear Filters Button */}
         {hasActiveFilters && (
           <div className="flex items-end">
